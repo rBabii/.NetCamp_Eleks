@@ -12,5 +12,6 @@ Blog Platform
 		4. Comments to single post
 		5. Likes/dislikes on posts
 		6. Likes/dislikes on user post page (computed - based on likes/dislikes form all posts) and
+		7. Report some post or post page
 	3) Social medias integration
 		1. Aviability to manage post page from telegram
