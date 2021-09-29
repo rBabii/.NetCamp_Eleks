@@ -1,9 +1,0 @@
-Blog Platform
-	User can create blog after auth process;
-	Can add some social media application creds and post something from it (for the first time - telegram only)
-	1) Admin Panel for managing all content from users
-		1. Aviability to ban user
-		2. Aviability to hide some post
-	2) User can setup his own blog page with url = host/username
-		1.Add / delete / edit posts aviability
-		2.Drop all blog page aviability
