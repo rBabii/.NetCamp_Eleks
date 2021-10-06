@@ -1,6 +1,5 @@
 ﻿using Auth.Api.Models.Request;
 using Auth.Api.Models.Response;
-using Auth.Application.Exceptions;
 using Auth.Application.UserManagment;
 using Auth.Domain.UserAggregste;
 using Auth.Domain.UserAggregste.Exceptions;
@@ -38,19 +37,19 @@ namespace Auth.Api.Controllers
             try
             {
                 var loginResult = _userManager.LogIn(request.Email, request.Password);
+                if (!loginResult.IsValid)
+                {
+                    return BadRequest(loginResult.Error);
+                }
                 return Ok(new AuthentificatedUserResponse()
                 {
                     AccessToken = loginResult.AccessToken,
                     RefreshToken = loginResult.RefreshToken
                 });
             }
-            catch (UserNotFoundException ex)
+            catch (UserUpdateException ex)
             {
-                return BadRequest(new ErrorResponse("User with current email is not registered."));
-            }
-            catch (PasswordNotVerifiedException ex)
-            {
-                return BadRequest(new ErrorResponse("Invalid password."));
+                return StatusCode(500);
             }
             catch (Exception)
             {
@@ -71,19 +70,19 @@ namespace Auth.Api.Controllers
             try
             {
                 var loginResult = _userManager.RefreshJWT(refreshRequest.RefreshToken);
+                if (!loginResult.IsValid)
+                {
+                    return BadRequest(loginResult.Error);
+                }
                 return Ok(new AuthentificatedUserResponse()
                 {
                     AccessToken = loginResult.AccessToken,
                     RefreshToken = loginResult.RefreshToken
                 });
             }
-            catch (UserNotFoundException ex)
+            catch (UserUpdateException ex)
             {
-                return BadRequest(new ErrorResponse("Current refresh token not exist."));
-            }
-            catch (RefreshTokenNotValidException ex)
-            {
-                return BadRequest(new ErrorResponse("Refresh Token not valid or expired."));
+                return StatusCode(500);
             }
             catch (Exception)
             {
@@ -102,10 +101,18 @@ namespace Auth.Api.Controllers
                 int UserID = 0;
                 if (Int32.TryParse(ClaimUserID.Value, out UserID) && UserID != 0)
                 {
-                    _userManager.LogOut(UserID);
+                    var result = _userManager.LogOut(UserID);
+                    if (!result.IsValid)
+                    {
+                        return BadRequest(result.Error);
+                    }
                     return NoContent();
                 }
                 return BadRequest("LogOut failed.");
+            }
+            catch (UserUpdateException ex)
+            {
+                return StatusCode(500);
             }
             catch (Exception)
             {
@@ -146,16 +153,20 @@ namespace Auth.Api.Controllers
                 }
                 };
                 var registerResult = _userManager.Register(user);
+                if (!registerResult.IsValid)
+                {
+                    return BadRequest(registerResult.Error);
+                }
                 return Ok(new RegisterResponse()
                 {
-                    Id = registerResult.Id,
-                    UserName = registerResult.UserName,
-                    Email = registerResult.Email
+                    Id = registerResult.User.Id,
+                    UserName = registerResult.User.UserName,
+                    Email = registerResult.User.Email
                 });
             }
-            catch(UserRegisterException ex)
+            catch(UserAddException ex)
             {
-                return Conflict(new ErrorResponse("User already exist."));
+                return StatusCode(500);
             }
             catch (Exception)
             {

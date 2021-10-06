@@ -1,4 +1,4 @@
-﻿using Auth.Application.Models;
+﻿using Auth.Application.Result;
 using Auth.Application.Options;
 using Microsoft.Extensions.Options;
 using System;
@@ -49,7 +49,7 @@ namespace Auth.Application.Helpers
 
                 var verified = keyToCheck.SequenceEqual(key);
 
-                return new CheckPasswordResult() { IsVerified = verified, NeedsUpgrade = needsUpgrade };
+                return new CheckPasswordResult(verified, needsUpgrade);
             }
         }
 

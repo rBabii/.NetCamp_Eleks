@@ -37,42 +37,28 @@ namespace Auth.Infrastructure.Repositories
                 {
                     user.Id = 1;
                     Users.Add(user);
-                    try
-                    {
-                        var addedUser = Get(user.Id);
-                        IsModifyLocked = false;
-                        return addedUser;
-                    }
-                    catch (UserNotFoundException ex)
+
+                    var addedUser = Get(user.Id);
+                    if(addedUser == null)
                     {
                         IsModifyLocked = false;
-                        throw new UserAddException("User is not added, or was deleted by another process.", ex);
+                        throw new UserAddException("User is not added, or was deleted by another process.");
                     }
-                    catch (Exception)
-                    {
-                        IsModifyLocked = false;
-                        throw;
-                    }
+                    IsModifyLocked = false;
+                    return addedUser;
                 }
                 else
                 {
                     user.Id = (Users.Last().Id + 1);
-                    try
-                    {
-                        var addedUser = Get(user.Id);
-                        IsModifyLocked = false;
-                        return addedUser;
-                    }
-                    catch (UserNotFoundException ex)
+
+                    var addedUser = Get(user.Id);
+                    if(addedUser == null)
                     {
                         IsModifyLocked = false;
-                        throw new UserAddException("User is not added, or was deleted by another process.", ex);
+                        throw new UserAddException("User is not added, or was deleted by another process.");
                     }
-                    catch (Exception)
-                    {
-                        IsModifyLocked = false;
-                        throw;
-                    }
+                    IsModifyLocked = false;
+                    return addedUser;
                 }
             }
             // Update existing
@@ -83,24 +69,17 @@ namespace Auth.Infrastructure.Repositories
                 throw new UserUpdateException("user not found for updating.");
             }
             Users[index] = user;
-            try
+            var updatedUser = Get(user.Id);
+            if(updatedUser == null)
             {
                 IsModifyLocked = false;
-                return Get(user.Id);
+                throw new UserUpdateException("user not found after updating process.");
             }
-            catch (UserNotFoundException ex)
-            {
-                IsModifyLocked = false;
-                throw new UserUpdateException("user not found after updating process.", ex);
-            }
-            catch(Exception)
-            {
-                IsModifyLocked = false;
-                throw;
-            }
+            IsModifyLocked = false;
+            return updatedUser;
         }
 
-        public void Delete(User user)
+        public bool Delete(User user)
         {
             while (IsModifyLocked)
             {
@@ -110,15 +89,11 @@ namespace Auth.Infrastructure.Repositories
             if (user == null)
             {
                 IsModifyLocked = false;
-                throw new ArgumentNullException("user object argument can not be null.");
+                return false;
             }
             var removeResult = Users.Remove(user);
-            if (!removeResult)
-            {
-                IsModifyLocked = false;
-                throw new UserDeleteException("user was not found to deleted.");
-            }
             IsModifyLocked = false;
+            return removeResult;
         }
 
         public IEnumerable<User> Get()
@@ -130,13 +105,9 @@ namespace Auth.Infrastructure.Repositories
         {
             if(id < 1)
             {
-                throw new ArgumentException("id argument can not be less then '1'.");
+                return null;
             }
             var user = Users.Where(user => user.Id == id)?.SingleOrDefault();
-            if(user == null)
-            {
-                throw new UserNotFoundException($"user with id:'{id}' is not found.");
-            }
             return user;
         }
 
@@ -144,13 +115,9 @@ namespace Auth.Infrastructure.Repositories
         {
             if (string.IsNullOrEmpty(email))
             {
-                throw new ArgumentException("email argument can not be null or empty string.");
+                return null;
             }
             var user = Users.Where(user => user.Email == email)?.SingleOrDefault();
-            if(user == null)
-            {
-                throw new UserNotFoundException($"user with email:'{email}' is not found.");
-            }
             return user;
         }
 
@@ -158,13 +125,9 @@ namespace Auth.Infrastructure.Repositories
         {
             if (string.IsNullOrEmpty(refreshToken))
             {
-                throw new ArgumentException("refreshToken argument can not be null or empty string.");
+                return null;
             }
             var user = Users.Where(user => user.RefreshToken == refreshToken)?.SingleOrDefault();
-            if(user == null)
-            {
-                throw new UserNotFoundException($"user with refreshToken:'{refreshToken}' is not found.");
-            }
             return user;
         }
 
@@ -172,13 +135,9 @@ namespace Auth.Infrastructure.Repositories
         {
             if (string.IsNullOrEmpty(userName))
             {
-                throw new ArgumentException("userName argument can not be null or empty string.");
+                return null;
             }
             var user = Users.Where(user => user.UserName == userName)?.SingleOrDefault();
-            if (user == null)
-            {
-                throw new UserNotFoundException($"user with userName:'{userName}' is not found.");
-            }
             return user;
         }
     }

@@ -14,6 +14,6 @@ namespace Auth.Domain.UserAggregste
         User GetByUserName(string userName);
         User GetByRefreshToken(string refreshToken);
         User AddOrUpdate(User user);
-        void Delete(User user);
+        bool Delete(User user);
     }
 }
