@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace Auth.Application.Options
 {
-    public class RefreshOptions
+    public class RefreshOptions : BaseJwtOptions
     {
-        public string Issuer { get; set; }
-        public string Audience { get; set; }
-        public string Secret { get; set; }
-        public int TokenLifetime { get; set; } //in sec
     }
 }

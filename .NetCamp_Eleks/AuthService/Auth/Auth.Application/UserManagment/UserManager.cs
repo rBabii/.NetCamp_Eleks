@@ -1,4 +1,9 @@
 ﻿using Auth.Application.Helpers;
+using Auth.Application.Helpers.JWT;
+using Auth.Application.Helpers.JWT.Auth;
+using Auth.Application.Helpers.JWT.EmailVerify;
+using Auth.Application.Helpers.JWT.RefreshToken;
+using Auth.Application.Helpers.JWT.ResetPassword;
 using Auth.Application.Options;
 using Auth.Application.Result;
 using Auth.Domain.UserAggregste;
@@ -16,22 +21,25 @@ namespace Auth.Application.UserManagment
     public class UserManager
     {
         private readonly IUserRepository _userRepository;
-        private readonly IOptions<AuthOptions> _authOptions;
         private readonly PasswordHasher _passwordHasher;
-        private readonly TokenRefresher _tokenRefresher;
-        private readonly RefreshTokenValidator _refreshTokenValidator;
+        private readonly RefreshTokenHelper _refreshTokenHelper;
+        private readonly AuthTokenHelper _authTokenHelper;
+        private readonly ResetPasswordTokenHelper _resetPasswordTokenHelper;
+        private readonly EmailVerifyTokenHelper _emailVerifyTokenHelper;
 
         public UserManager(IUserRepository userRepository,
-                            IOptions<AuthOptions> authOptions,
                             PasswordHasher passwordHasher,
-                            TokenRefresher tokenRefresher,
-                            RefreshTokenValidator refreshTokenValidator)
+                            RefreshTokenHelper refreshTokenHelper,
+                            AuthTokenHelper authTokenHelper,
+                            ResetPasswordTokenHelper resetPasswordTokenHelper,
+                            EmailVerifyTokenHelper emailVerifyTokenHelper)
         {
             _userRepository = userRepository;
-            _authOptions = authOptions;
             _passwordHasher = passwordHasher;
-            _tokenRefresher = tokenRefresher;
-            _refreshTokenValidator = refreshTokenValidator;
+            _refreshTokenHelper = refreshTokenHelper;
+            _authTokenHelper = authTokenHelper;
+            _resetPasswordTokenHelper = resetPasswordTokenHelper;
+            _emailVerifyTokenHelper = emailVerifyTokenHelper;
         }
 
         public AuthentificateResult Authentificate(string email, string password)
@@ -49,26 +57,6 @@ namespace Auth.Application.UserManagment
             }
             return new AuthentificateResult(user);
         }
-        public string GenerateJWT(User user)
-        {
-            var authParams = _authOptions.Value;
-            var claims = new List<Claim>()
-            {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString())
-            };
-            foreach (var role in user.Roles)
-            {
-                claims.Add(new Claim("role", role.Name.ToString()));
-            }
-
-            return TokenGenerator.GenerateJWT(
-                    authParams.Secret,
-                    authParams.Issuer,
-                    authParams.Audience,
-                    authParams.TokenLifetime,
-                    claims);
-        }
         public LoginResult LogIn(string email, string password)
         {
             var authResult = Authentificate(email, password);
@@ -76,8 +64,8 @@ namespace Auth.Application.UserManagment
             {
                 return new LoginResult("", "", authResult.Error);
             }
-            var token = GenerateJWT(authResult.User);
-            var refreshToken = _tokenRefresher.GenerateJWT();
+            var token = _authTokenHelper.GenerateJWT(authResult.User);
+            var refreshToken = _refreshTokenHelper.GenerateJWT();
             authResult.User.RefreshToken = refreshToken;
             _userRepository.AddOrUpdate(authResult.User);
 
@@ -101,13 +89,13 @@ namespace Auth.Application.UserManagment
             {
                 return new LoginResult("", "", new Error("Refresh token does not exist."));
             }
-            bool isValidRefreshToken = _refreshTokenValidator.Validate(refreshToken);
+            bool isValidRefreshToken = _refreshTokenHelper.Validate(refreshToken);
             if (!isValidRefreshToken)
             {
                 return new LoginResult("", "", new Error("Invalid refresh token."));
             }
-            var token = GenerateJWT(user);
-            var newRefreshToken = _tokenRefresher.GenerateJWT();
+            var token = _authTokenHelper.GenerateJWT(user);
+            var newRefreshToken = _refreshTokenHelper.GenerateJWT();
             user.RefreshToken = newRefreshToken;
             _userRepository.AddOrUpdate(user);
             return new LoginResult(token, newRefreshToken);
@@ -146,21 +134,59 @@ namespace Auth.Application.UserManagment
             }
             return _userRepository.Delete(user);
         }
-        public string GenerateForgotPasswordToken()
+        public string GenerateResetPasswordToken(User user)
         {
-            throw new NotImplementedException();
+            var token = _resetPasswordTokenHelper.GenerateJWT(user);
+            return token;
         }
-        public string GenerateEmailVerificationToken()
+        public string GenerateEmailVerificationToken(User user)
         {
-            throw new NotImplementedException();
+            var token = _emailVerifyTokenHelper.GenerateJWT(user);
+            return token;
         }
-        public void ChangeForgotenPassword()
+        public bool ResetPassword(string token, string password)
         {
-            throw new NotImplementedException();
+            var result = _resetPasswordTokenHelper.Validate(token);
+            if (result == null)
+            {
+                return false;
+            }
+            var UserIdClaim = result.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
+            int UserID = 0;
+            if (Int32.TryParse(UserIdClaim.Value, out UserID) && UserID != 0)
+            {
+                var user = _userRepository.Get(UserID);
+                if (user == null)
+                {
+                    return false;
+                }
+                user.Password = _passwordHasher.Hash(password);
+                _userRepository.AddOrUpdate(user);
+                return true;
+            }
+            return false;
         }
-        public void VerifyEmail()
+        public bool VerifyEmail(string token)
         {
-            throw new NotImplementedException();
+            var result = _emailVerifyTokenHelper.Validate(token);
+            if(result == null)
+            {
+                return false;
+            }
+            var UserIdClaim = result.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
+            int UserID = 0;
+            if (Int32.TryParse(UserIdClaim.Value, out UserID) && UserID != 0)
+            {
+                var user = _userRepository.Get(UserID);
+                if(user == null)
+                {
+                    return false;
+                }
+                 user.IsVerified = true;
+                 _userRepository.AddOrUpdate(user);
+                return true;
+            }
+            return false;
         }
     }
 }

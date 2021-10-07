@@ -1,4 +1,8 @@
 using Auth.Application.Helpers;
+using Auth.Application.Helpers.JWT.Auth;
+using Auth.Application.Helpers.JWT.EmailVerify;
+using Auth.Application.Helpers.JWT.RefreshToken;
+using Auth.Application.Helpers.JWT.ResetPassword;
 using Auth.Application.Options;
 using Auth.Application.UserManagment;
 using Auth.Domain.UserAggregste;
@@ -34,10 +38,17 @@ namespace Auth.Api
         {
             services.AddControllers();
             services.AddSingleton<IUserRepository, InMemoryUserRepository>();
-            services.AddSingleton<UserManager>();
+            
+
             services.AddSingleton<PasswordHasher>();
-            services.AddSingleton<TokenRefresher>();
-            services.AddSingleton<RefreshTokenValidator>();
+
+            services.AddSingleton<AuthTokenHelper>();
+            services.AddSingleton<EmailVerifyTokenHelper>();
+            services.AddSingleton<ResetPasswordTokenHelper>();
+            services.AddSingleton<RefreshTokenHelper>();
+
+            services.AddSingleton<UserManager>();
+
             var authOptions = Configuration.GetSection("Auth").Get<AuthOptions>();
 
             services.AddCors(options =>
@@ -81,6 +92,12 @@ namespace Auth.Api
 
             var refreshOptionsConfigurations = Configuration.GetSection("AuthRefresh");
             services.Configure<RefreshOptions>(refreshOptionsConfigurations);
+
+            var emailVerifyTokenOptionsConfigurations = Configuration.GetSection("EmailVerifyToken");
+            services.Configure<EmailVerifyTokenOptions>(emailVerifyTokenOptionsConfigurations);
+
+            var resetPasswordTokenOptionsConfigurations = Configuration.GetSection("PasswordResetToken");
+            services.Configure<ResetPasswordTokenOptions>(resetPasswordTokenOptionsConfigurations);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

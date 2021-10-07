@@ -7,7 +7,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Application.Helpers
+namespace Auth.Application.Helpers.JWT
 {
     public static class TokenGenerator
     {

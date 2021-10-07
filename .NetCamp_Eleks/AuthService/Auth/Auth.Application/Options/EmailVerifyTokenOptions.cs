@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Auth.Application.Options
 {
-    public class AuthOptions : BaseJwtOptions
+    public class EmailVerifyTokenOptions : BaseJwtOptions
     {
     }
 }

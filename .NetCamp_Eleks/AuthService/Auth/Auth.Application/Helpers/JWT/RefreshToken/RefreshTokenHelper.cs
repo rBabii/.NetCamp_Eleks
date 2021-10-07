@@ -8,20 +8,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Application.Helpers
+namespace Auth.Application.Helpers.JWT.RefreshToken
 {
-    public class RefreshTokenValidator
+    public class RefreshTokenHelper : BaseJwtOptionsCtor
     {
-        private readonly IOptions<RefreshOptions> refreshOptions;
 
-        public RefreshTokenValidator(IOptions<RefreshOptions> refreshOptions)
+        public RefreshTokenHelper(IOptions<RefreshOptions> refreshOptions)
+            : base(refreshOptions) { }
+
+        public string GenerateJWT()
         {
-            this.refreshOptions = refreshOptions;
+            var refreshParams = _jwtOptions.Value;
+            return TokenGenerator.GenerateJWT(
+                    refreshParams.Secret,
+                    refreshParams.Issuer,
+                    refreshParams.Audience,
+                    refreshParams.TokenLifetime
+                    );
         }
 
         public bool Validate(string refreshToken)
         {
-            var options = refreshOptions.Value;
+            var options = _jwtOptions.Value;
             TokenValidationParameters tokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateIssuer = true,
