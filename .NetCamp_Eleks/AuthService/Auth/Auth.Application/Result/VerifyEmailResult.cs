@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Auth.Application.Result
 {
-    public class LogOutResult : BaseResult
+    public class VerifyEmailResult : BaseResult
     {
-        public LogOutResult(Error error = null)
-            : base(error)
+        public VerifyEmailResult(Error error = null)
+            :base(error)
         {
+
         }
     }
 }

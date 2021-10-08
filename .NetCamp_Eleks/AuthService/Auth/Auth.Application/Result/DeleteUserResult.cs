@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Auth.Application.Result
 {
-    public class LogOutResult : BaseResult
+    public class DeleteUserResult : BaseResult
     {
-        public LogOutResult(Error error = null)
+        public DeleteUserResult(Error error = null)
             : base(error)
         {
+
         }
     }
 }

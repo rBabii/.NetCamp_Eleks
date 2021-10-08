@@ -1,20 +1,13 @@
 ﻿using Auth.Application.Helpers;
-using Auth.Application.Helpers.JWT;
 using Auth.Application.Helpers.JWT.Auth;
 using Auth.Application.Helpers.JWT.EmailVerify;
 using Auth.Application.Helpers.JWT.RefreshToken;
 using Auth.Application.Helpers.JWT.ResetPassword;
-using Auth.Application.Options;
 using Auth.Application.Result;
 using Auth.Domain.UserAggregste;
-using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Auth.Application.UserManagment
 {
@@ -76,11 +69,11 @@ namespace Auth.Application.UserManagment
             var user = _userRepository.Get(userId);
             if(user == null)
             {
-                return new LogOutResult(false, new Error($"User does not exist to logout."));
+                return new LogOutResult(new Error("User does not exist to logout."));
             }
             user.RefreshToken = null;
             _userRepository.AddOrUpdate(user);
-            return new LogOutResult(true);
+            return new LogOutResult();
         }
         public LoginResult RefreshJWT(string refreshToken)
         {
@@ -126,30 +119,43 @@ namespace Auth.Application.UserManagment
             var registeredUser = _userRepository.AddOrUpdate(user);
             return new RegisterResult(registeredUser);
         }
-        public bool Delete(User user)
+        public DeleteUserResult DeleteUser(User user)
         {
-            if (user == null || user.Id < 1 || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.UserName))
+            if (user == null || user.Id < 1)
             {
-                return false;
+                return new DeleteUserResult(new Error("user is not valid"));
             }
-            return _userRepository.Delete(user);
+            var deleteResult = _userRepository.Delete(user);
+            if (!deleteResult)
+            {
+                return new DeleteUserResult(new Error("user is not exist."));
+            }
+            return new DeleteUserResult();
         }
-        public string GenerateResetPasswordToken(User user)
+        public GenerateResetPasswordTokenResult GenerateResetPasswordToken(User user)
         {
+            if(user == null || user.Id < 1)
+            {
+                return new GenerateResetPasswordTokenResult("", new Error("user is not valid"));
+            }
             var token = _resetPasswordTokenHelper.GenerateJWT(user);
-            return token;
+            return new GenerateResetPasswordTokenResult(token);
         }
-        public string GenerateEmailVerificationToken(User user)
+        public GenerateEmailVerificationTokenResult GenerateEmailVerificationToken(User user)
         {
+            if (user == null || user.Id < 1)
+            {
+                return new GenerateEmailVerificationTokenResult("", new Error("user is not valid"));
+            }
             var token = _emailVerifyTokenHelper.GenerateJWT(user);
-            return token;
+            return new GenerateEmailVerificationTokenResult(token);
         }
-        public bool ResetPassword(string token, string password)
+        public ResetPasswordResult ResetPassword(string token, string password)
         {
             var result = _resetPasswordTokenHelper.Validate(token);
             if (result == null)
             {
-                return false;
+                return new ResetPasswordResult(new Error("Invalid token."));
             }
             var UserIdClaim = result.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
             int UserID = 0;
@@ -158,20 +164,20 @@ namespace Auth.Application.UserManagment
                 var user = _userRepository.Get(UserID);
                 if (user == null)
                 {
-                    return false;
+                    return new ResetPasswordResult(new Error("Reset password failed. User does not exist."));
                 }
                 user.Password = _passwordHasher.Hash(password);
                 _userRepository.AddOrUpdate(user);
-                return true;
+                return new ResetPasswordResult();
             }
-            return false;
+            return new ResetPasswordResult(new Error("Reset password failed. Invalid User.Id"));
         }
-        public bool VerifyEmail(string token)
+        public VerifyEmailResult VerifyEmail(string token)
         {
             var result = _emailVerifyTokenHelper.Validate(token);
             if(result == null)
             {
-                return false;
+                return new VerifyEmailResult(new Error("Invalid token."));
             }
             var UserIdClaim = result.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
             int UserID = 0;
@@ -180,13 +186,13 @@ namespace Auth.Application.UserManagment
                 var user = _userRepository.Get(UserID);
                 if(user == null)
                 {
-                    return false;
+                    return new VerifyEmailResult(new Error("Email verification failed. User does not exist."));
                 }
                  user.IsVerified = true;
                  _userRepository.AddOrUpdate(user);
-                return true;
+                return new VerifyEmailResult();
             }
-            return false;
+            return new VerifyEmailResult(new Error("Email verification failed. Invalid User.Id"));
         }
     }
 }

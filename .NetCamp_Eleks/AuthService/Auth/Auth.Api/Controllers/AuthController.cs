@@ -1,5 +1,6 @@
 ﻿using Auth.Api.Models.Request;
 using Auth.Api.Models.Response;
+using Auth.Application.Result;
 using Auth.Application.UserManagment;
 using Auth.Domain.UserAggregste;
 using Auth.Domain.UserAggregste.Exceptions;
@@ -32,7 +33,7 @@ namespace Auth.Api.Controllers
             {
                 IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
-                return BadRequest(new ErrorResponse(ErrorMessages));
+                return BadRequest(new Error(ErrorMessages));
             }
             try
             {
@@ -57,7 +58,7 @@ namespace Auth.Api.Controllers
             }
         }
 
-        [Route("api/[controller]/refresh")]
+        [Route("api/[controller]/login/refresh")]
         [HttpPost]
         public IActionResult Refresh(RefreshTokenRequest refreshRequest) 
         {
@@ -65,7 +66,7 @@ namespace Auth.Api.Controllers
             {
                 IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
-                return BadRequest(new ErrorResponse(ErrorMessages));
+                return BadRequest(new Error(ErrorMessages));
             }
             try
             {
@@ -128,11 +129,11 @@ namespace Auth.Api.Controllers
             {
                 IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
 
-                return BadRequest(new ErrorResponse(ErrorMessages));
+                return BadRequest(new Error(ErrorMessages));
             }
             if (registerRequest.Password != registerRequest.ConfirmPassword)
             {
-                return BadRequest(new ErrorResponse("Password not match"));
+                return BadRequest(new Error("Password not match"));
             }
             try
             {
@@ -142,15 +143,15 @@ namespace Auth.Api.Controllers
                     Password = registerRequest.Password,
                     UserName = registerRequest.UserName,
                     Roles = new List<Role>()
-                {
-                    new Role()
                     {
-                        Id = Domain.UserAggregste.Enums.Role.User,
-                        Description = "Simple User",
-                        Name = "User",
-                        Permisions = "All"
+                        new Role()
+                        {
+                            Id = Domain.UserAggregste.Enums.Role.User,
+                            Description = "Simple User",
+                            Name = "User",
+                            Permisions = "All"
+                        }
                     }
-                }
                 };
                 var registerResult = _userManager.Register(user);
                 if (!registerResult.IsValid)
