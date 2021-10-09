@@ -50,7 +50,7 @@ namespace Auth.Infrastructure.Repositories
                 else
                 {
                     user.Id = (Users.Last().Id + 1);
-
+                    Users.Add(user);
                     var addedUser = Get(user.Id);
                     if(addedUser == null)
                     {

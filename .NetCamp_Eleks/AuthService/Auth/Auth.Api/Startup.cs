@@ -7,6 +7,8 @@ using Auth.Application.Options;
 using Auth.Application.UserManagment;
 using Auth.Domain.UserAggregste;
 using Auth.Infrastructure.Repositories;
+using Auth.Infrastructure.Services.Email;
+using Auth.Infrastructure.Services.Email.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,15 +39,17 @@ namespace Auth.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSwaggerGen();
             services.AddSingleton<IUserRepository, InMemoryUserRepository>();
             
-
             services.AddSingleton<PasswordHasher>();
 
             services.AddSingleton<AuthTokenHelper>();
             services.AddSingleton<EmailVerifyTokenHelper>();
             services.AddSingleton<ResetPasswordTokenHelper>();
             services.AddSingleton<RefreshTokenHelper>();
+
+            services.AddSingleton<EmailService>();
 
             services.AddSingleton<UserManager>();
 
@@ -98,6 +102,9 @@ namespace Auth.Api
 
             var resetPasswordTokenOptionsConfigurations = Configuration.GetSection("PasswordResetToken");
             services.Configure<ResetPasswordTokenOptions>(resetPasswordTokenOptionsConfigurations);
+
+            var EmailServiceOptionsConfigurations = Configuration.GetSection("EmailServiceOptions");
+            services.Configure<EmailServiceOptions>(EmailServiceOptionsConfigurations);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -113,6 +120,11 @@ namespace Auth.Api
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth API V1");
+            });
 
             app.UseEndpoints(endpoints =>
             {

@@ -12,7 +12,7 @@ namespace Auth.Application.Result
         public GenerateEmailVerificationTokenResult(string emailVerificationToken, Error error = null)
             : base(error)
         {
-
+            EmailVerificationToken = emailVerificationToken;
         }
     }
 }

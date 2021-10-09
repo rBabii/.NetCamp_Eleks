@@ -10,9 +10,11 @@ namespace Auth.Application.Result
     public class RegisterResult : BaseResult
     {
         public User User { get; set; }
-        public RegisterResult(User user, Error error = null)
+        public string EmailVerifyToken { get; set; }
+        public RegisterResult(User user, string emailVerifyToken, Error error = null)
             : base(error)
         {
+            EmailVerifyToken = emailVerifyToken;
             User = user;
         }
     }

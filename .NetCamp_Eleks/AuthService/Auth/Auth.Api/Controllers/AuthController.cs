@@ -158,6 +158,16 @@ namespace Auth.Api.Controllers
                 {
                     return BadRequest(registerResult.Error);
                 }
+                try
+                {
+                    _userManager.SendEmailVerifyTokenLink(registerResult.User,
+                        "http://localhost:5000/api/auth/VerifyUser" + $"?token={registerResult.EmailVerifyToken}");
+                }
+                catch(Exception ex)
+                {
+                    //TODO ADD LOGS
+                }
+
                 return Ok(new RegisterResponse()
                 {
                     Id = registerResult.User.Id,
@@ -166,6 +176,48 @@ namespace Auth.Api.Controllers
                 });
             }
             catch(UserAddException ex)
+            {
+                return StatusCode(500);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Route("/api/[controller]/VerifyUser")]
+        [HttpGet]
+        public IActionResult VerifyUserEmail(string token)
+        {
+            var result = _userManager.VerifyEmail(token);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Error);
+            }
+            return Ok("User verified successfully");
+        }
+
+        [Authorize]
+        [Route("/api/[controller]/Delete")]
+        [HttpPost]
+        public IActionResult Delete()
+        {
+            try
+            {
+                var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
+                int UserID = 0;
+                if (Int32.TryParse(ClaimUserID.Value, out UserID) && UserID != 0)
+                {
+                    var result = _userManager.DeleteUser(UserID);
+                    if (!result.IsValid)
+                    {
+                        return BadRequest(result.Error);
+                    }
+                    return NoContent();
+                }
+                return BadRequest("User delete failed.");
+            }
+            catch (UserUpdateException ex)
             {
                 return StatusCode(500);
             }
