@@ -160,6 +160,32 @@ namespace Auth.Application.UserManagment
             _emailService.SendEmail(email);
         }
 
+        public void SendResetPasswordToken(User user, string token)
+        {
+            var email = new SendEmailModel()
+            {
+                EmailAddressesTo = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Address = user.Email,
+                        Name = user.UserName
+                    }
+                },
+                EmailAddressesFrom = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Address = "auth@auth.com",
+                        Name = "Auth"
+                    }
+                },
+                Subject = "Reset Password Token",
+                Body = $"{token}"
+            };
+            _emailService.SendEmail(email);
+        }
+
         public DeleteUserResult DeleteUser(int userID)
         {
             var user = _userRepository.Get(userID);
@@ -175,14 +201,19 @@ namespace Auth.Application.UserManagment
             }
             return new DeleteUserResult();
         }
-        public GenerateResetPasswordTokenResult GenerateResetPasswordToken(User user)
+        public GenerateResetPasswordTokenResult GenerateResetPasswordToken(string userEmail)
         {
+            var user = _userRepository.GetByEmail(userEmail);
             if(user == null || user.Id < 1)
             {
-                return new GenerateResetPasswordTokenResult("", new Error("user is not valid"));
+                return new GenerateResetPasswordTokenResult("", user, new Error("user is not valid or not exist."));
             }
             var token = _resetPasswordTokenHelper.GenerateJWT(user);
-            return new GenerateResetPasswordTokenResult(token);
+            if (string.IsNullOrEmpty(token))
+            {
+                return new GenerateResetPasswordTokenResult("", user, new Error("reset password token generating failed."));
+            }
+            return new GenerateResetPasswordTokenResult(token, user);
         }
         public GenerateEmailVerificationTokenResult GenerateEmailVerificationToken(User user)
         {
@@ -201,8 +232,11 @@ namespace Auth.Application.UserManagment
                 return new ResetPasswordResult(new Error("Invalid token."));
             }
             var UserIdClaim = result.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            int UserID = 0;
-            if (Int32.TryParse(UserIdClaim.Value, out UserID) && UserID != 0)
+            if(UserIdClaim == null)
+            {
+                return new ResetPasswordResult(new Error("User is not present in token."));
+            }
+            if (Int32.TryParse(UserIdClaim.Value, out int UserID) && UserID != 0)
             {
                 var user = _userRepository.Get(UserID);
                 if (user == null)
@@ -223,13 +257,20 @@ namespace Auth.Application.UserManagment
                 return new VerifyEmailResult(new Error("Invalid token."));
             }
             var UserIdClaim = result.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            int UserID = 0;
-            if (Int32.TryParse(UserIdClaim.Value, out UserID) && UserID != 0)
+            if (UserIdClaim == null)
+            {
+                return new VerifyEmailResult(new Error("User is not present in token."));
+            }
+            if (Int32.TryParse(UserIdClaim.Value, out int UserID) && UserID != 0)
             {
                 var user = _userRepository.Get(UserID);
                 if(user == null)
                 {
                     return new VerifyEmailResult(new Error("Email verification failed. User does not exist."));
+                }
+                if (user.IsVerified)
+                {
+                    return new VerifyEmailResult(new Error("User allready Verified"));
                 }
                  user.IsVerified = true;
                  _userRepository.AddOrUpdate(user);

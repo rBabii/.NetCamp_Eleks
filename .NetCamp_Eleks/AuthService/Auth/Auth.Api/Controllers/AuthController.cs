@@ -99,17 +99,20 @@ namespace Auth.Api.Controllers
             try
             {
                 var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
-                int UserID = 0;
-                if (Int32.TryParse(ClaimUserID.Value, out UserID) && UserID != 0)
+                if (ClaimUserID == null)
+                {
+                    return StatusCode(500, "LogOut failed.");
+                }
+                if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
                 {
                     var result = _userManager.LogOut(UserID);
                     if (!result.IsValid)
                     {
-                        return BadRequest(result.Error);
+                        return Forbid();
                     }
                     return NoContent();
                 }
-                return BadRequest("LogOut failed.");
+                return StatusCode(500, "LogOut failed.");
             }
             catch (UserUpdateException ex)
             {
@@ -205,17 +208,20 @@ namespace Auth.Api.Controllers
             try
             {
                 var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
-                int UserID = 0;
-                if (Int32.TryParse(ClaimUserID.Value, out UserID) && UserID != 0)
+                if (ClaimUserID == null)
+                {
+                    return StatusCode(500, "User delete failed.");
+                }
+                if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
                 {
                     var result = _userManager.DeleteUser(UserID);
                     if (!result.IsValid)
                     {
-                        return BadRequest(result.Error);
+                        return Forbid();
                     }
                     return NoContent();
                 }
-                return BadRequest("User delete failed.");
+                return StatusCode(500, "User delete failed.");
             }
             catch (UserUpdateException ex)
             {
@@ -225,6 +231,59 @@ namespace Auth.Api.Controllers
             {
                 return StatusCode(500);
             }
+        }
+
+        [Route("/api/[controller]/SendResetPasswordToken")]
+        [HttpPost]
+        public IActionResult SendResetPasswordToken(SendResetPasswordTokenRequest sendResetPasswordTokenRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+
+                return BadRequest(new Error(ErrorMessages));
+            }
+            var result =_userManager.GenerateResetPasswordToken(sendResetPasswordTokenRequest.Email);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Error);
+            }
+            _userManager.SendResetPasswordToken(result.User, result.ResetPasswordToken);
+            return Ok("Reset password token sended to your email Address.");
+        }
+
+        [Route("/api/[controller]/ResetPassword")]
+        [HttpPost]
+        public IActionResult ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
+
+                return BadRequest(new Error(ErrorMessages));
+            }
+            if(resetPasswordRequest.Password != resetPasswordRequest.ConfirmPassword)
+            {
+                return BadRequest(new Error("Passwords not match."));
+            }
+            try
+            {
+                var result = _userManager.ResetPassword(resetPasswordRequest.Token, resetPasswordRequest.Password);
+                if (!result.IsValid)
+                {
+                    return BadRequest(result.Error);
+                }
+                return Ok("Password updated.");
+            }
+            catch (UserUpdateException ex)
+            {
+                return StatusCode(500);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+            
         }
     }
 }
