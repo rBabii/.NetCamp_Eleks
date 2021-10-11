@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Domain.UserAggregste
+namespace Auth.Domain.UserAggregate
 {
     public class User
     {

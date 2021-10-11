@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Domain.UserAggregste.Exceptions
+namespace Auth.Domain.UserAggregate.Exceptions
 {
-    public class UserAddException : Exception
+    public class UserUpdateException : Exception
     {
-        public UserAddException()
+        public UserUpdateException()
         {
 
         }
-        public UserAddException(string message)
+        public UserUpdateException(string message)
             : base(message)
         {
 
         }
-        public UserAddException(string message, Exception inner)
+        public UserUpdateException(string message, Exception inner)
             : base(message, inner)
         {
 

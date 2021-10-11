@@ -1,4 +1,4 @@
-﻿using Auth.Domain.UserAggregste;
+﻿using Auth.Domain.UserAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;

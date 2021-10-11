@@ -1,5 +1,5 @@
-﻿using Auth.Domain.UserAggregste;
-using Auth.Domain.UserAggregste.Exceptions;
+﻿using Auth.Domain.UserAggregate;
+using Auth.Domain.UserAggregate.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

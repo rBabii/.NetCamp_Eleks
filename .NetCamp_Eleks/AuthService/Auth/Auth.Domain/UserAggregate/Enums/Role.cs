@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Domain.UserAggregste.Enums
+namespace Auth.Domain.UserAggregate.Enums
 {
     public enum Role
     {

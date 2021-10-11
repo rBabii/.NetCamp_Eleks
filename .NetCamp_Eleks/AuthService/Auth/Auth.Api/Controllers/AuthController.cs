@@ -2,8 +2,8 @@
 using Auth.Api.Models.Response;
 using Auth.Application.Result;
 using Auth.Application.UserManagment;
-using Auth.Domain.UserAggregste;
-using Auth.Domain.UserAggregste.Exceptions;
+using Auth.Domain.UserAggregate;
+using Auth.Domain.UserAggregate.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -149,7 +149,7 @@ namespace Auth.Api.Controllers
                     {
                         new Role()
                         {
-                            Id = Domain.UserAggregste.Enums.Role.User,
+                            Id = Domain.UserAggregate.Enums.Role.User,
                             Description = "Simple User",
                             Name = "User",
                             Permisions = "All"

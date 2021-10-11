@@ -1,5 +1,5 @@
 ﻿using Auth.Application.Options;
-using Auth.Domain.UserAggregste;
+using Auth.Domain.UserAggregate;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
