@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogPlatform.Domain.AgregatesModel.PostAgregate
+namespace BlogPlatform.Api.Models.Response
 {
-    /// <summary>
-    /// Single Post Item
-    /// </summary>
-    public class PostItem
+    public class CreatePostResponse
     {
-        public int Id { get; set; }
+        public int PostId { get; set; }
+        public int BlogId { get; set; }
         public DateTime DateCreated { get; set; }
+        public DateTime DatePosted { get; set; }
+        public bool Visible { get; set; }
         public string Title { get; set; }
         public string SubTitle { get; set; }
         public string HeaderContent { get; set; }
         public string MainContent { get; set; }
-        public string FooterContet { get; set; }
+        public string FooterContent { get; set; }
     }
 }

@@ -1,20 +1,15 @@
-﻿using BlogPlatform.Domain.AgregatesModel.PostAgregate;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogPlatform.Domain.AgregatesModel.BlogAgregate
+namespace BlogPlatform.Api.Models.Response
 {
-    public class Blog
+    public class SetupBlogResponse
     {
         public int BlogId { get; set; }
-        public int UserId { get; set; }
         public string BlogUrl { get; set; }
-        public IEnumerable<Post> Posts { get; }
         public DateTime DateCreated { get; set; }
-        public bool Blocked { get; set; }
         public bool Visible { get; set; }
         public string Title { get; set; }
         public string SubTitle { get; set; }
