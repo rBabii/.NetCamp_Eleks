@@ -9,15 +9,20 @@ namespace BlogPlatform.Application.Managers.BlogManager.Params
 {
     public class SetupBlogParams
     {
-        [Required]
+        [Required(ErrorMessage = "UserId is Required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "UserId cant be less then 1")]
         public int UserId { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "BlogUrl is Required.")]
         public string BlogUrl { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Title is Required.")]
         public string Title { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "SubTitle is Required.")]
         public string SubTitle { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Visible is Required.")]
         public bool Visible { get; set; }
     }
 }

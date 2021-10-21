@@ -11,6 +11,5 @@ namespace Auth.Domain.UserAggregate
         public Enums.Role Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Permisions { get; set; }
     }
 }

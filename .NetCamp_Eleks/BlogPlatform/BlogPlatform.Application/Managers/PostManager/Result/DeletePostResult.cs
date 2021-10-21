@@ -1,4 +1,4 @@
-﻿using BlogPlatform.Application.Result;
+﻿using Result.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,7 @@ namespace BlogPlatform.Application.Managers.PostManager.Result
     {
         public DeletePostResult(Error error = null)
             :base(error)
-        {
-
+        {   
         }
     }
 }

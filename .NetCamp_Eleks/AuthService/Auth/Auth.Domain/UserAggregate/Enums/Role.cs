@@ -10,6 +10,7 @@ namespace Auth.Domain.UserAggregate.Enums
     {
         None = 0,
         User = 1,
-        Admin = 2
+        Admin = 2,
+        SystemAdmin = 3
     }
 }

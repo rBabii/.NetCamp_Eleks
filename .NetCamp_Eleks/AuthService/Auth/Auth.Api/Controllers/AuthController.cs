@@ -1,9 +1,9 @@
-﻿using Auth.Api.Models.Request;
-using Auth.Api.Models.Response;
-using Auth.Application.Result;
-using Auth.Application.UserManagment;
+﻿using Auth.Application.UserManager;
+using Auth.Application.UserManager.Params;
 using Auth.Domain.UserAggregate;
 using Auth.Domain.UserAggregate.Exceptions;
+using DTOs.Auth.Models.Request;
+using DTOs.Auth.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,20 +27,22 @@ namespace Auth.Api.Controllers
 
         [Route("api/[controller]/login")]
         [HttpPost]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public IActionResult Login(LoginRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
             try
             {
-                var loginResult = _userManager.LogIn(request.Email, request.Password);
-                if (!loginResult.IsValid)
+                var loginResult = _userManager.Login(new LoginParams() 
                 {
-                    return BadRequest(loginResult.Error);
+                    Email = request.Email,
+                    Password = request.Password
+                });
+                if (!loginResult.IsValid && !loginResult.CanContinue)
+                {
+                    return BadRequest(new DTOs.Common.Models.Error() 
+                    {
+                        ErrorMessages = loginResult.Error.ErrorMessages,
+                        ErrorType = (DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
+                    });
                 }
                 return Ok(new AuthentificatedUserResponse()
                 {
@@ -52,7 +54,7 @@ namespace Auth.Api.Controllers
             {
                 return StatusCode(500);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
@@ -62,18 +64,19 @@ namespace Auth.Api.Controllers
         [HttpPost]
         public IActionResult Refresh(RefreshTokenRequest refreshRequest) 
         {
-            if (!ModelState.IsValid)
-            {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
             try
             {
-                var loginResult = _userManager.RefreshJWT(refreshRequest.RefreshToken);
-                if (!loginResult.IsValid)
+                var loginResult = _userManager.LoginRefresh(new LoginRefreshParams() 
                 {
-                    return BadRequest(loginResult.Error);
+                    RefreshToken = refreshRequest.RefreshToken
+                });
+                if (!loginResult.IsValid && !loginResult.CanContinue)
+                {
+                    return BadRequest(new DTOs.Common.Models.Error()
+                    {
+                        ErrorMessages = loginResult.Error.ErrorMessages,
+                        ErrorType = (DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
+                    });
                 }
                 return Ok(new AuthentificatedUserResponse()
                 {
@@ -85,7 +88,7 @@ namespace Auth.Api.Controllers
             {
                 return StatusCode(500);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
@@ -101,24 +104,31 @@ namespace Auth.Api.Controllers
                 var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
                 if (ClaimUserID == null)
                 {
-                    return StatusCode(500, "LogOut failed.");
+                    return Forbid();
                 }
                 if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
                 {
-                    var result = _userManager.LogOut(UserID);
-                    if (!result.IsValid)
+                    var result = _userManager.Logout(new LogoutParams() 
                     {
-                        return Forbid();
+                        UserId = UserID
+                    });
+                    if (!result.IsValid && !result.CanContinue)
+                    {
+                        return BadRequest(new DTOs.Common.Models.Error()
+                        {
+                            ErrorMessages = result.Error.ErrorMessages,
+                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        });
                     }
                     return NoContent();
                 }
-                return StatusCode(500, "LogOut failed.");
+                return Forbid();
             }
             catch (UserUpdateException ex)
             {
                 return StatusCode(500);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
@@ -126,78 +136,70 @@ namespace Auth.Api.Controllers
 
         [Route("/api/[controller]/Register")]
         [HttpPost]
-        public IActionResult Register([FromBody] RegisterRequest registerRequest)
+        public IActionResult Register(RegisterRequest registerRequest)
         {
-            if (!ModelState.IsValid)
-            {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
-            if (registerRequest.Password != registerRequest.ConfirmPassword)
-            {
-                return BadRequest(new Error("Password not match"));
-            }
             try
             {
-                var user = new User()
+                var registerResult = _userManager.Register(new RegisterParams() 
                 {
                     Email = registerRequest.Email,
                     Password = registerRequest.Password,
-                    UserName = registerRequest.UserName,
-                    Roles = new List<Role>()
+                    ConfirmPassword = registerRequest.ConfirmPassword
+                });
+                if (!registerResult.IsValid && !registerResult.CanContinue)
+                {
+                    return BadRequest(new DTOs.Common.Models.Error()
                     {
-                        new Role()
-                        {
-                            Id = Domain.UserAggregate.Enums.Role.User,
-                            Description = "Simple User",
-                            Name = "User",
-                            Permisions = "All"
-                        }
-                    }
-                };
-                var registerResult = _userManager.Register(user);
-                if (!registerResult.IsValid)
-                {
-                    return BadRequest(registerResult.Error);
-                }
-                try
-                {
-                    _userManager.SendEmailVerifyTokenLink(registerResult.User,
-                        "http://localhost:5000/api/auth/VerifyUser" + $"?token={registerResult.EmailVerifyToken}");
-                }
-                catch(Exception ex)
-                {
-                    //TODO ADD LOGS
+                        ErrorMessages = registerResult.Error.ErrorMessages,
+                        ErrorType = (DTOs.Common.Enums.ErrorType)registerResult.Error.ErrorType
+                    });
                 }
 
                 return Ok(new RegisterResponse()
                 {
                     Id = registerResult.User.Id,
-                    UserName = registerResult.User.UserName,
-                    Email = registerResult.User.Email
+                    Email = registerResult.User.Email,
+                    EmailVerifyToken = registerResult.EmailVerifyToken
                 });
             }
             catch(UserAddException ex)
             {
                 return StatusCode(500);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
         }
 
         [Route("/api/[controller]/VerifyUser")]
-        [HttpGet]
-        public IActionResult VerifyUserEmail(string token)
+        [HttpPost]
+        public IActionResult VerifyUserEmail(VerifyUserEmailRequest verifyUserEmailRequest)
         {
-            var result = _userManager.VerifyEmail(token);
-            if (!result.IsValid)
+            try
             {
-                return BadRequest(result.Error);
+                var result = _userManager.VerifyEmail(new VerifyEmailParams()
+                {
+                    Token = verifyUserEmailRequest.Token
+                });
+                if (!result.IsValid && !result.CanContinue)
+                {
+                    return BadRequest(new DTOs.Common.Models.Error()
+                    {
+                        ErrorMessages = result.Error.ErrorMessages,
+                        ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                    });
+                }
+                return Ok("User verified successfully");
             }
-            return Ok("User verified successfully");
+            catch (UserUpdateException ex)
+            {
+                return StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Authorize]
@@ -210,68 +212,73 @@ namespace Auth.Api.Controllers
                 var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
                 if (ClaimUserID == null)
                 {
-                    return StatusCode(500, "User delete failed.");
+                    return Forbid();
                 }
                 if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
                 {
-                    var result = _userManager.DeleteUser(UserID);
-                    if (!result.IsValid)
+                    var result = _userManager.DeleteUser(new DeleteUserParams() 
                     {
-                        return Forbid();
+                        UserId = UserID
+                    });
+                    if (!result.IsValid && !result.CanContinue)
+                    {
+                        return BadRequest(new DTOs.Common.Models.Error()
+                        {
+                            ErrorMessages = result.Error.ErrorMessages,
+                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        });
                     }
                     return NoContent();
                 }
-                return StatusCode(500, "User delete failed.");
+                return Forbid();
             }
-            catch (UserUpdateException ex)
-            {
-                return StatusCode(500);
-            }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
         }
 
-        [Route("/api/[controller]/SendResetPasswordToken")]
+        [Route("/api/[controller]/GetResetPasswordToken")]
         [HttpPost]
-        public IActionResult SendResetPasswordToken(SendResetPasswordTokenRequest sendResetPasswordTokenRequest)
+        public IActionResult GetResetPasswordToken(GetResetPasswordTokenRequest getResetPasswordTokenRequest)
         {
-            if (!ModelState.IsValid)
+            var result =_userManager.GenerateResetPasswordToken(new GenerateResetPasswordTokenParams() 
             {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
-            var result =_userManager.GenerateResetPasswordToken(sendResetPasswordTokenRequest.Email);
-            if (!result.IsValid)
+                Email = getResetPasswordTokenRequest.Email
+            });
+            if (!result.IsValid && !result.CanContinue)
             {
-                return BadRequest(result.Error);
+                return BadRequest(new DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
             }
-            _userManager.SendResetPasswordToken(result.User, result.ResetPasswordToken);
-            return Ok("Reset password token sended to your email Address.");
+            return Ok(new GetResetPasswordTokenResponse() 
+            {
+                Token = result.ResetPasswordToken
+            });
         }
 
         [Route("/api/[controller]/ResetPassword")]
         [HttpPost]
         public IActionResult ResetPassword(ResetPasswordRequest resetPasswordRequest)
         {
-            if (!ModelState.IsValid)
-            {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
-            if(resetPasswordRequest.Password != resetPasswordRequest.ConfirmPassword)
-            {
-                return BadRequest(new Error("Passwords not match."));
-            }
             try
             {
-                var result = _userManager.ResetPassword(resetPasswordRequest.Token, resetPasswordRequest.Password);
-                if (!result.IsValid)
+                var result = _userManager.ResetPassword(new ResetPasswordParams() 
                 {
-                    return BadRequest(result.Error);
+                    Token = resetPasswordRequest.Token,
+                    Password = resetPasswordRequest.Password,
+                    ConfirmPassword = resetPasswordRequest.ConfirmPassword
+                });
+                if (!result.IsValid && !result.CanContinue)
+                {
+                    return BadRequest(new DTOs.Common.Models.Error()
+                    {
+                        ErrorMessages = result.Error.ErrorMessages,
+                        ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                    });
                 }
                 return Ok("Password updated.");
             }
@@ -279,7 +286,7 @@ namespace Auth.Api.Controllers
             {
                 return StatusCode(500);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }

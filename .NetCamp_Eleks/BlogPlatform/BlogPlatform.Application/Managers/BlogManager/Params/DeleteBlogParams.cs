@@ -9,7 +9,8 @@ namespace BlogPlatform.Application.Managers.BlogManager.Params
 {
     public class DeleteBlogParams
     {
-        [Required]
+        [Required(ErrorMessage = "UserId is Required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "UserId cant be less then 1")]
         public int UserId { get; set; }
     }
 }

@@ -1,5 +1,5 @@
-﻿using BlogPlatform.Application.Result;
-using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
+﻿using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
+using Result.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;

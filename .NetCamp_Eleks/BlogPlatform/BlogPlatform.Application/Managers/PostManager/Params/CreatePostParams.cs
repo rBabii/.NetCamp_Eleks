@@ -9,21 +9,29 @@ namespace BlogPlatform.Application.Managers.PostManager.Params
 {
     public class CreatePostParams
     {
-        [Required]
+        [Required(ErrorMessage = "UserId is Required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "UserId cant be less then 1")]
         public int UserId { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "DatePosted is Required.")]
         public DateTime DatePosted { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Visible is Required.")]
         public bool Visible { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "Title is Required.")]
         public string Title { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "SubTitle is Required.")]
         public string SubTitle { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "HeaderContent is Required.")]
         public string HeaderContent { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "MainContent is Required.")]
         public string MainContent { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "FooterContent is Required.")]
         public string FooterContent { get; set; }
     }
 }

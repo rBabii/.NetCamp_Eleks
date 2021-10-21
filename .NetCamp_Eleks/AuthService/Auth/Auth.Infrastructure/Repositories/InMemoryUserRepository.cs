@@ -26,10 +26,10 @@ namespace Auth.Infrastructure.Repositories
                 IsModifyLocked = false;
                 throw new ArgumentNullException("user object argument can not be null.");
             }
-            if(string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.UserName))
+            if(string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
             {
                 IsModifyLocked = false;
-                throw new ArgumentException("Email, Password and UserName is required fields in User object.");
+                throw new ArgumentException("Email, Password is required fields in User object.");
             }
             if( user.Id < 1 ) //Add new
             {
@@ -128,16 +128,6 @@ namespace Auth.Infrastructure.Repositories
                 return null;
             }
             var user = Users.Where(user => user.RefreshToken == refreshToken)?.SingleOrDefault();
-            return user;
-        }
-
-        public User GetByUserName(string userName)
-        {
-            if (string.IsNullOrEmpty(userName))
-            {
-                return null;
-            }
-            var user = Users.Where(user => user.UserName == userName)?.SingleOrDefault();
             return user;
         }
     }

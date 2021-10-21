@@ -1,8 +1,10 @@
+using BlogPlatform.Application.Managers.AuthManager;
 using BlogPlatform.Application.Managers.BlogManager;
 using BlogPlatform.Application.Managers.PostManager;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
 using BlogPlatform.Infrastructure.ExternalOptions;
+using BlogPlatform.Infrastructure.HttpServices.Auth;
 using BlogPlatform.Infrastructure.Repositories.MsSQL;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +39,14 @@ namespace BlogPlatform.Api
 
             services.AddControllers();
             services.AddSwaggerGen();
+
+            services.AddHttpClient<AuthService>(c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:5000");
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddSingleton<AuthManager>();
 
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(Configuration["Data:ConnectionStrings:DefaultConnection"]));
             services.AddScoped<IBlogRepository, MsSqlBlogRepository>();
@@ -97,7 +107,7 @@ namespace BlogPlatform.Api
 
             app.UseSwagger();
             app.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Auth API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blog API V1");
             });
 
             app.UseEndpoints(endpoints =>

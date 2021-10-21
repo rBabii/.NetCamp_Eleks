@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DTOs\DTOs\DTOs.csproj" />
     <ProjectReference Include="..\BlogPlatform.Domain\BlogPlatform.Domain.csproj" />
   </ItemGroup>
 

@@ -9,9 +9,12 @@ namespace BlogPlatform.Application.Managers.PostManager.Params
 {
     public class DeletePostParams
     {
-        [Required]
+        [Required(ErrorMessage = "PostId is Required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "PostId cant be less then 1")]
         public int PostId { get; set; }
-        [Required]
+
+        [Required(ErrorMessage = "UserId is Required.")]
+        [Range(1, int.MaxValue, ErrorMessage = "UserId cant be less then 1")]
         public int UserId { get; set; }
     }
 }

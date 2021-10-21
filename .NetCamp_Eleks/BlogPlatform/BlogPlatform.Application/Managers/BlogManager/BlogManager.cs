@@ -1,8 +1,9 @@
 ﻿using BlogPlatform.Application.Managers.BlogManager.Params;
 using BlogPlatform.Application.Managers.BlogManager.Result;
-using BlogPlatform.Application.Result;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
+using Result.Base;
+using Result.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,17 @@ namespace BlogPlatform.Application.Managers.BlogManager
 
         public SetupBlogResult SetupBlog(SetupBlogParams setupBlogParams)
         {
+            var validateErrorResult = ParamsValidator.Validate(setupBlogParams);
+            if (validateErrorResult != null)
+            {
+                return new SetupBlogResult(null, validateErrorResult);
+            }
+
+            var existingBlog = _blogRepository.Get(setupBlogParams.UserId);
+            if(existingBlog != null)
+            {
+                return new SetupBlogResult(null, new Error("Blog Page is allready setuped.", ErrorType.Validation));
+            }
             var blog = _blogRepository.AddOrUpdate(new Blog()
             {
                 UserId = setupBlogParams.UserId,
@@ -38,15 +50,21 @@ namespace BlogPlatform.Application.Managers.BlogManager
 
         public DeleteBlogResult DeleteBlog(DeleteBlogParams deleteBlogParams)
         {
+            var validateErrorResult = ParamsValidator.Validate(deleteBlogParams);
+            if (validateErrorResult != null)
+            {
+                return new DeleteBlogResult(validateErrorResult);
+            }
+
             var blog = _blogRepository.GetByUserId(deleteBlogParams.UserId);
             if(blog == null)
             {
-                return new DeleteBlogResult(new Error("Blog to delete Is not exist"));
+                return new DeleteBlogResult(new Error("Blog to delete Is not exist", ErrorType.Validation));
             }
             var res = _blogRepository.Delete(blog);
             if (!res)
             {
-                return new DeleteBlogResult(new Error("Blog Delete Failed"));
+                return new DeleteBlogResult(new Error("Blog Delete Failed", ErrorType.SystemError));
             }
             return new DeleteBlogResult();
         }

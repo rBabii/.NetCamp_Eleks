@@ -4,7 +4,7 @@ using Auth.Application.Helpers.JWT.EmailVerify;
 using Auth.Application.Helpers.JWT.RefreshToken;
 using Auth.Application.Helpers.JWT.ResetPassword;
 using Auth.Application.Options;
-using Auth.Application.UserManagment;
+using Auth.Application.UserManager;
 using Auth.Domain.UserAggregate;
 using Auth.Infrastructure.Repositories;
 using Auth.Infrastructure.Services.Email;

@@ -1,4 +1,4 @@
-﻿using BlogPlatform.Application.Result;
+﻿using Result.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;

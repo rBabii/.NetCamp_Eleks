@@ -1,9 +1,8 @@
-﻿using BlogPlatform.Api.Models.Request;
-using BlogPlatform.Api.Models.Response;
-using BlogPlatform.Application.Managers.BlogManager;
+﻿using BlogPlatform.Application.Managers.BlogManager;
 using BlogPlatform.Application.Managers.BlogManager.Params;
-using BlogPlatform.Application.Result;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
+using DTOs.BlogPlatform.Models.Request;
+using DTOs.BlogPlatform.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +17,7 @@ namespace BlogPlatform.Api.Controllers
     [ApiController]
     public class BlogController : ControllerBase
     {
-        public readonly BlogManager _blogManager;
+        private readonly BlogManager _blogManager;
         public BlogController(BlogManager blogManager)
         {
             _blogManager = blogManager;
@@ -29,33 +28,30 @@ namespace BlogPlatform.Api.Controllers
         [HttpPost]
         public IActionResult SetupBlog(SetupBlogRequest setupBlogRequest)
         {
-            if (!ModelState.IsValid)
-            {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
             try
             {
                 var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
-                var ClaimUserName = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.UniqueName);
-                if (ClaimUserID == null || ClaimUserName == null)
+                if (ClaimUserID == null)
                 {
-                    return StatusCode(500);
+                    return StatusCode(500, "Invalid Auth Token.");
                 }
                 if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
                 {
                     var result = _blogManager.SetupBlog(new SetupBlogParams() 
                     {
                         UserId = UserID,
-                        BlogUrl = ClaimUserName.Value,
+                        BlogUrl = UserID.ToString(),
                         Title = setupBlogRequest.Title,
                         SubTitle = setupBlogRequest.SubTitle,
                         Visible = setupBlogRequest.Visible
                     });
-                    if (!result.IsValid)
+                    if (!result.IsValid && !result.CanContinue)
                     {
-                        return BadRequest(result.Error);
+                        return BadRequest(new DTOs.Common.Models.Error() 
+                        { 
+                            ErrorMessages = result.Error.ErrorMessages,
+                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        });
                     }
                     return Ok(new SetupBlogResponse() 
                     {
@@ -67,9 +63,9 @@ namespace BlogPlatform.Api.Controllers
                         SubTitle = result.Blog.SubTitle
                     });
                 }
-                return StatusCode(500, "Setup Blog failed.");
+                return StatusCode(500, "Invalid Auth Token.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500, "Setup Blog failed.");
             }
@@ -81,18 +77,12 @@ namespace BlogPlatform.Api.Controllers
         [HttpPost]
         public IActionResult DeleteBlog()
         {
-            if (!ModelState.IsValid)
-            {
-                IEnumerable<string> ErrorMessages = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage));
-
-                return BadRequest(new Error(ErrorMessages));
-            }
             try
             {
                 var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
                 if (ClaimUserID == null)
                 {
-                    return StatusCode(500);
+                    return StatusCode(500, "Invalid Auth Token.");
                 }
                 if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
                 {
@@ -100,13 +90,17 @@ namespace BlogPlatform.Api.Controllers
                     {
                         UserId = UserID
                     });
-                    if (!result.IsValid)
+                    if (!result.IsValid && !result.CanContinue)
                     {
-                        return BadRequest(result.Error);
+                        return BadRequest(new DTOs.Common.Models.Error()
+                        {
+                            ErrorMessages = result.Error.ErrorMessages,
+                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        });
                     }
                     return NoContent();
                 }
-                return StatusCode(500, "Delete Blog failed.");
+                return StatusCode(500, "Invalid Auth Token.");
             }
             catch (Exception)
             {
