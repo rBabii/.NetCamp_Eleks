@@ -2,8 +2,8 @@
 using BlogPlatform.Application.Managers.BlogManager.Result;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
-using Result.Base;
-using Result.Helpers;
+using External.Result.Base;
+using External.Result.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

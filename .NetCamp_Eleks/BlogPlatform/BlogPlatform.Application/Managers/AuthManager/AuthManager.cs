@@ -1,25 +1,28 @@
 ﻿using BlogPlatform.Application.Managers.AuthManager.Params;
 using BlogPlatform.Application.Managers.AuthManager.Result;
 using BlogPlatform.Infrastructure.HttpServices.Auth;
-using Result.Base;
-using DTOs.Auth.Models.Request;
-using Result.Helpers;
+using External.Result.Base;
+using External.DTOs.Auth.Models.Request;
+using External.Result.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using BlogPlatform.Application.Managers.EmailManager.Params;
 
 namespace BlogPlatform.Application.Managers.AuthManager
 {
     public class AuthManager
     {
         private readonly AuthService _authService;
+        private readonly EmailManager.EmailManager _emailManager;
 
-        public AuthManager(AuthService authService)
+        public AuthManager(AuthService authService, EmailManager.EmailManager emailManager)
         {
             _authService = authService;
+            _emailManager = emailManager;
         }
 
         public async Task<RegisterResult> Register(RegisterParams registerParams)
@@ -37,10 +40,32 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 ConfirmPassword = registerParams.ConfirmPassword
             });
 
-            if (!result.IsSuccess && result.Error.ErrorType != DTOs.Common.Enums.ErrorType.Info)
+            if (!result.IsSuccess && result.Error.ErrorType != External.DTOs.Common.Enums.ErrorType.Info)
             {
                 return new RegisterResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }
+
+            var emailResult = await _emailManager.Send(new EmailManager.Params.SendEmailParams() 
+            {
+                EmailAddressesFrom = new List<EmailAddress>() 
+                {
+                    new EmailAddress()
+                    {
+                        Name = "BlogPlatform",
+                        Address = "noreply@BlogPlatForm.com"
+                    }
+                },
+                EmailAddressesTo = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Name = "NewUser",
+                        Address = result.ResponseObject.Email
+                    }
+                },
+                Subject = "Verfy Email",
+                Body = result.ResponseObject.EmailVerifyToken
+            });
 
             //SEND EMAIL WITH VERIFY LINK (url?token={resetPasswordToken})
 
@@ -60,7 +85,7 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 Token = verifyEmailParams.Token
             });
 
-            if (!result.IsSuccess && result.Error.ErrorType != DTOs.Common.Enums.ErrorType.Info)
+            if (!result.IsSuccess && result.Error.ErrorType != External.DTOs.Common.Enums.ErrorType.Info)
             {
                 return new VerifyEmailResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }
@@ -81,7 +106,7 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 Email = sendResetPasswordLinkParams.Email
             });
 
-            if (!result.IsSuccess && result.Error.ErrorType != DTOs.Common.Enums.ErrorType.Info)
+            if (!result.IsSuccess && result.Error.ErrorType != External.DTOs.Common.Enums.ErrorType.Info)
             {
                 return new SendResetPasswordLinkResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }
@@ -106,7 +131,7 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 ConfirmPassword = resetPasswordParams.ConfirmPassword
             });
 
-            if (!result.IsSuccess && result.Error.ErrorType != DTOs.Common.Enums.ErrorType.Info)
+            if (!result.IsSuccess && result.Error.ErrorType != External.DTOs.Common.Enums.ErrorType.Info)
             {
                 return new ResetPasswordResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }

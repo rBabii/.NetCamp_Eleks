@@ -5,7 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Result\Result\Result.csproj" />
+    <ProjectReference Include="..\..\External\External.Options\External.Options.csproj" />
+    <ProjectReference Include="..\..\External\External.Result\External.Result.csproj" />
     <ProjectReference Include="..\BlogPlatform.Infrastructure\BlogPlatform.Infrastructure.csproj" />
   </ItemGroup>
 

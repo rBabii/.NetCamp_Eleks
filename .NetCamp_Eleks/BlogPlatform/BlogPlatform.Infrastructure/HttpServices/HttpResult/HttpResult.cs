@@ -1,4 +1,4 @@
-﻿using DTOs.Common.Models;
+﻿using External.DTOs.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

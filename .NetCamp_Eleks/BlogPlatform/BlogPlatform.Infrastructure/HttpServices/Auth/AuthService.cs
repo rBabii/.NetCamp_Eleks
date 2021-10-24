@@ -1,7 +1,7 @@
 ﻿using BlogPlatform.Infrastructure.HttpServices.HttpResult;
-using DTOs.Auth.Models.Request;
-using DTOs.Auth.Models.Response;
-using DTOs.Common.Models;
+using External.DTOs.Auth.Models.Request;
+using External.DTOs.Auth.Models.Response;
+using External.DTOs.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +15,11 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
     public class AuthService
     {
         private readonly HttpClient _httpClient;
+
+        private JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
 
         public AuthService(HttpClient httpClient)
         {
@@ -36,7 +41,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
                 using var successResponseStream = await response.Content.ReadAsStreamAsync();
 
                 var successObject = await JsonSerializer.DeserializeAsync
-                    <RegisterResponse>(successResponseStream);
+                    <RegisterResponse>(successResponseStream, JsonSerializerOptions);
 
                 var successResult = new HttpResult<RegisterResponse>(response.StatusCode)
                 {
@@ -48,7 +53,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
 
             using var errorResponseStream = await response.Content.ReadAsStreamAsync();
             var errorObject = await JsonSerializer.DeserializeAsync
-                <Error>(errorResponseStream);
+                <Error>(errorResponseStream, JsonSerializerOptions);
 
             var errorResult = new HttpResult<RegisterResponse>(response.StatusCode)
             {
@@ -58,7 +63,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
             return errorResult;
         }
 
-        public async Task<HttpResult<string>> VerifyUserEmail(VerifyUserEmailRequest verifyUserEmailRequest)
+        public async Task<HttpResult<object>> VerifyUserEmail(VerifyUserEmailRequest verifyUserEmailRequest)
         {
             var body = new StringContent(
                 JsonSerializer.Serialize(verifyUserEmailRequest),
@@ -72,22 +77,17 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
             {
                 using var successResponseStream = await response.Content.ReadAsStreamAsync();
 
-                var successObject = await JsonSerializer.DeserializeAsync
-                    <string>(successResponseStream);
-
-                var successResult = new HttpResult<string>(response.StatusCode)
-                {
-                    ResponseObject = successObject,
-                };
+                var successResult = new HttpResult<object>(response.StatusCode)
+                { };
 
                 return successResult;
             }
 
             using var errorResponseStream = await response.Content.ReadAsStreamAsync();
             var errorObject = await JsonSerializer.DeserializeAsync
-                <Error>(errorResponseStream);
+                <Error>(errorResponseStream, JsonSerializerOptions);
 
-            var errorResult = new HttpResult<string>(response.StatusCode)
+            var errorResult = new HttpResult<object>(response.StatusCode)
             {
                 Error = errorObject
             };
@@ -110,7 +110,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
                 using var successResponseStream = await response.Content.ReadAsStreamAsync();
 
                 var successObject = await JsonSerializer.DeserializeAsync
-                    <GetResetPasswordTokenResponse>(successResponseStream);
+                    <GetResetPasswordTokenResponse>(successResponseStream, JsonSerializerOptions);
 
                 var successResult = new HttpResult<GetResetPasswordTokenResponse>(response.StatusCode)
                 {
@@ -122,7 +122,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
 
             using var errorResponseStream = await response.Content.ReadAsStreamAsync();
             var errorObject = await JsonSerializer.DeserializeAsync
-                <Error>(errorResponseStream);
+                <Error>(errorResponseStream, JsonSerializerOptions);
 
             var errorResult = new HttpResult<GetResetPasswordTokenResponse>(response.StatusCode)
             {
@@ -133,7 +133,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
 
         }
 
-        public async Task<HttpResult<string>> ResetPassword(ResetPasswordRequest resetPasswordRequest)
+        public async Task<HttpResult<object>> ResetPassword(ResetPasswordRequest resetPasswordRequest)
         {
             var body = new StringContent(
                 JsonSerializer.Serialize(resetPasswordRequest),
@@ -147,22 +147,17 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
             {
                 using var successResponseStream = await response.Content.ReadAsStreamAsync();
 
-                var successObject = await JsonSerializer.DeserializeAsync
-                    <string>(successResponseStream);
-
-                var successResult = new HttpResult<string>(response.StatusCode)
-                {
-                    ResponseObject = successObject,
-                };
+                var successResult = new HttpResult<object>(response.StatusCode)
+                { };
 
                 return successResult;
             }
 
             using var errorResponseStream = await response.Content.ReadAsStreamAsync();
             var errorObject = await JsonSerializer.DeserializeAsync
-                <Error>(errorResponseStream);
+                <Error>(errorResponseStream, JsonSerializerOptions);
 
-            var errorResult = new HttpResult<string>(response.StatusCode)
+            var errorResult = new HttpResult<object>(response.StatusCode)
             {
                 Error = errorObject
             };

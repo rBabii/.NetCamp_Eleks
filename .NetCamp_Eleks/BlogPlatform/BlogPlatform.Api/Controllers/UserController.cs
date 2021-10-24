@@ -1,8 +1,8 @@
 ﻿using BlogPlatform.Application.Managers.AuthManager;
 using BlogPlatform.Application.Managers.AuthManager.Params;
-using DTOs.Auth.Models.Request;
-using DTOs.Common.Enums;
-using DTOs.Common.Models;
+using External.DTOs.Auth.Models.Request;
+using External.DTOs.Common.Enums;
+using External.DTOs.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;

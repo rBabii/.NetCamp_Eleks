@@ -1,5 +1,5 @@
-﻿using DTOs.Auth.Models.Response;
-using Result.Base;
+﻿using External.DTOs.Auth.Models.Response;
+using External.Result.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;

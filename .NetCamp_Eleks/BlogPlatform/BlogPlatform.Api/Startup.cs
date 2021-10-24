@@ -1,26 +1,23 @@
 using BlogPlatform.Application.Managers.AuthManager;
 using BlogPlatform.Application.Managers.BlogManager;
+using BlogPlatform.Application.Managers.EmailManager;
 using BlogPlatform.Application.Managers.PostManager;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
-using BlogPlatform.Infrastructure.ExternalOptions;
 using BlogPlatform.Infrastructure.HttpServices.Auth;
+using BlogPlatform.Infrastructure.HttpServices.Email;
 using BlogPlatform.Infrastructure.Repositories.MsSQL;
+using External.Options.Auth;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BlogPlatform.Api
 {
@@ -46,13 +43,21 @@ namespace BlogPlatform.Api
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-            services.AddSingleton<AuthManager>();
+            services.AddHttpClient<EmailService>(c =>
+            {
+                c.BaseAddress = new Uri("http://localhost:5002");
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+
 
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(Configuration["Data:ConnectionStrings:DefaultConnection"]));
             services.AddScoped<IBlogRepository, MsSqlBlogRepository>();
             services.AddScoped<IPostRepository, MsSqlPostRepository>();
             services.AddScoped<BlogManager>();
             services.AddScoped<PostManager>();
+            services.AddScoped<AuthManager>();
+            services.AddScoped<EmailManager>();
 
             services.AddCors(options =>
             {

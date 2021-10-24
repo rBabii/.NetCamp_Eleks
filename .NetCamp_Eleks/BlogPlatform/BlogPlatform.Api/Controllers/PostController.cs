@@ -1,8 +1,8 @@
 ﻿using BlogPlatform.Application.Managers.PostManager;
 using BlogPlatform.Application.Managers.PostManager.Params;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
-using DTOs.BlogPlatform.Models.Request;
-using DTOs.BlogPlatform.Models.Response;
+using External.DTOs.BlogPlatform.Models.Request;
+using External.DTOs.BlogPlatform.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,10 +50,10 @@ namespace BlogPlatform.Api.Controllers
                     });
                     if (!result.IsValid && !result.CanContinue)
                     {
-                        return BadRequest(new DTOs.Common.Models.Error()
+                        return BadRequest(new External.DTOs.Common.Models.Error()
                         {
                             ErrorMessages = result.Error.ErrorMessages,
-                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                            ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                         });
                     }
                     return Ok(new CreatePostResponse()
@@ -100,10 +100,10 @@ namespace BlogPlatform.Api.Controllers
                     });
                     if (!result.IsValid && !result.CanContinue)
                     {
-                        return BadRequest(new DTOs.Common.Models.Error()
+                        return BadRequest(new External.DTOs.Common.Models.Error()
                         {
                             ErrorMessages = result.Error.ErrorMessages,
-                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                            ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                         });
                     }
                     return NoContent();
