@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\DTOs\DTOs\DTOs.csproj" />
-    <ProjectReference Include="..\..\..\Result\Result\Result.csproj" />
+    <ProjectReference Include="..\..\..\External\External.DTOs\External.DTOs.csproj" />
+    <ProjectReference Include="..\..\..\External\External.Options\External.Options.csproj" />
+    <ProjectReference Include="..\..\..\External\External.Result\External.Result.csproj" />
     <ProjectReference Include="..\Auth.Infrastructure\Auth.Infrastructure.csproj" />
   </ItemGroup>
 

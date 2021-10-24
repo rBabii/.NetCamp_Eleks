@@ -2,8 +2,8 @@
 using Auth.Application.UserManager.Params;
 using Auth.Domain.UserAggregate;
 using Auth.Domain.UserAggregate.Exceptions;
-using DTOs.Auth.Models.Request;
-using DTOs.Auth.Models.Response;
+using External.DTOs.Auth.Models.Request;
+using External.DTOs.Auth.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,10 +38,10 @@ namespace Auth.Api.Controllers
                 });
                 if (!loginResult.IsValid && !loginResult.CanContinue)
                 {
-                    return BadRequest(new DTOs.Common.Models.Error() 
+                    return BadRequest(new External.DTOs.Common.Models.Error() 
                     {
                         ErrorMessages = loginResult.Error.ErrorMessages,
-                        ErrorType = (DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
+                        ErrorType = (External.DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
                     });
                 }
                 return Ok(new AuthentificatedUserResponse()
@@ -72,10 +72,10 @@ namespace Auth.Api.Controllers
                 });
                 if (!loginResult.IsValid && !loginResult.CanContinue)
                 {
-                    return BadRequest(new DTOs.Common.Models.Error()
+                    return BadRequest(new External.DTOs.Common.Models.Error()
                     {
                         ErrorMessages = loginResult.Error.ErrorMessages,
-                        ErrorType = (DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
+                        ErrorType = (External.DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
                     });
                 }
                 return Ok(new AuthentificatedUserResponse()
@@ -114,10 +114,10 @@ namespace Auth.Api.Controllers
                     });
                     if (!result.IsValid && !result.CanContinue)
                     {
-                        return BadRequest(new DTOs.Common.Models.Error()
+                        return BadRequest(new External.DTOs.Common.Models.Error()
                         {
                             ErrorMessages = result.Error.ErrorMessages,
-                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                            ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                         });
                     }
                     return NoContent();
@@ -148,10 +148,10 @@ namespace Auth.Api.Controllers
                 });
                 if (!registerResult.IsValid && !registerResult.CanContinue)
                 {
-                    return BadRequest(new DTOs.Common.Models.Error()
+                    return BadRequest(new External.DTOs.Common.Models.Error()
                     {
                         ErrorMessages = registerResult.Error.ErrorMessages,
-                        ErrorType = (DTOs.Common.Enums.ErrorType)registerResult.Error.ErrorType
+                        ErrorType = (External.DTOs.Common.Enums.ErrorType)registerResult.Error.ErrorType
                     });
                 }
 
@@ -184,10 +184,10 @@ namespace Auth.Api.Controllers
                 });
                 if (!result.IsValid && !result.CanContinue)
                 {
-                    return BadRequest(new DTOs.Common.Models.Error()
+                    return BadRequest(new External.DTOs.Common.Models.Error()
                     {
                         ErrorMessages = result.Error.ErrorMessages,
-                        ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                     });
                 }
                 return Ok("User verified successfully");
@@ -222,10 +222,10 @@ namespace Auth.Api.Controllers
                     });
                     if (!result.IsValid && !result.CanContinue)
                     {
-                        return BadRequest(new DTOs.Common.Models.Error()
+                        return BadRequest(new External.DTOs.Common.Models.Error()
                         {
                             ErrorMessages = result.Error.ErrorMessages,
-                            ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                            ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                         });
                     }
                     return NoContent();
@@ -248,10 +248,10 @@ namespace Auth.Api.Controllers
             });
             if (!result.IsValid && !result.CanContinue)
             {
-                return BadRequest(new DTOs.Common.Models.Error()
+                return BadRequest(new External.DTOs.Common.Models.Error()
                 {
                     ErrorMessages = result.Error.ErrorMessages,
-                    ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                 });
             }
             return Ok(new GetResetPasswordTokenResponse() 
@@ -274,10 +274,10 @@ namespace Auth.Api.Controllers
                 });
                 if (!result.IsValid && !result.CanContinue)
                 {
-                    return BadRequest(new DTOs.Common.Models.Error()
+                    return BadRequest(new External.DTOs.Common.Models.Error()
                     {
                         ErrorMessages = result.Error.ErrorMessages,
-                        ErrorType = (DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                     });
                 }
                 return Ok("Password updated.");

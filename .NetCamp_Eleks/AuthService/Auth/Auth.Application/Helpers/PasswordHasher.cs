@@ -1,5 +1,5 @@
 ﻿using Auth.Application.Result;
-using Auth.Application.Options;
+using External.Options.Auth;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;

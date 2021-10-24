@@ -1,4 +1,4 @@
-﻿using Auth.Application.Options;
+﻿using External.Options.Auth;
 using Auth.Domain.UserAggregate;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

@@ -1,4 +1,4 @@
-﻿using Auth.Application.Options;
+﻿using External.Options.Auth;
 using Microsoft.Extensions.Options;
 
 namespace Auth.Application.Helpers.JWT.Auth

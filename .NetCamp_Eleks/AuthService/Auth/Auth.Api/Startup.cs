@@ -3,12 +3,10 @@ using Auth.Application.Helpers.JWT.Auth;
 using Auth.Application.Helpers.JWT.EmailVerify;
 using Auth.Application.Helpers.JWT.RefreshToken;
 using Auth.Application.Helpers.JWT.ResetPassword;
-using Auth.Application.Options;
+using External.Options.Auth;
 using Auth.Application.UserManager;
 using Auth.Domain.UserAggregate;
 using Auth.Infrastructure.Repositories;
-using Auth.Infrastructure.Services.Email;
-using Auth.Infrastructure.Services.Email.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,6 +21,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Auth.Infrastructure.Repositories.MsSql;
 
 namespace Auth.Api
 {
@@ -40,8 +40,12 @@ namespace Auth.Api
         {
             services.AddControllers();
             services.AddSwaggerGen();
-            services.AddSingleton<IUserRepository, InMemoryUserRepository>();
-            
+
+
+            services.AddDbContext<DataContext>(opts => opts.UseSqlServer(Configuration["Data:ConnectionStrings:DefaultConnection"]));
+
+            services.AddScoped<IUserRepository, MsSqlUserRepository>();
+
             services.AddSingleton<PasswordHasher>();
 
             services.AddSingleton<AuthTokenHelper>();
@@ -49,9 +53,7 @@ namespace Auth.Api
             services.AddSingleton<ResetPasswordTokenHelper>();
             services.AddSingleton<RefreshTokenHelper>();
 
-            services.AddSingleton<EmailService>();
-
-            services.AddSingleton<UserManager>();
+            services.AddScoped<UserManager>();
 
             var authOptions = Configuration.GetSection("Auth").Get<AuthOptions>();
 
@@ -102,9 +104,6 @@ namespace Auth.Api
 
             var resetPasswordTokenOptionsConfigurations = Configuration.GetSection("PasswordResetToken");
             services.Configure<ResetPasswordTokenOptions>(resetPasswordTokenOptionsConfigurations);
-
-            var EmailServiceOptionsConfigurations = Configuration.GetSection("EmailServiceOptions");
-            services.Configure<EmailServiceOptions>(EmailServiceOptionsConfigurations);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

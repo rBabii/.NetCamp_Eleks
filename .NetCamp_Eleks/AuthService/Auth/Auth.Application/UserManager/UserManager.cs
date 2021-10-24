@@ -7,10 +7,8 @@ using Auth.Application.Result;
 using Auth.Application.UserManager.Params;
 using Auth.Application.UserManager.Result;
 using Auth.Domain.UserAggregate;
-using Auth.Infrastructure.Services.Email;
-using Auth.Infrastructure.Services.Email.Models;
-using Result.Base;
-using Result.Helpers;
+using External.Result.Base;
+using External.Result.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -26,15 +24,13 @@ namespace Auth.Application.UserManager
         private readonly AuthTokenHelper _authTokenHelper;
         private readonly ResetPasswordTokenHelper _resetPasswordTokenHelper;
         private readonly EmailVerifyTokenHelper _emailVerifyTokenHelper;
-        private readonly EmailService _emailService;
 
         public UserManager(IUserRepository userRepository,
                             PasswordHasher passwordHasher,
                             RefreshTokenHelper refreshTokenHelper,
                             AuthTokenHelper authTokenHelper,
                             ResetPasswordTokenHelper resetPasswordTokenHelper,
-                            EmailVerifyTokenHelper emailVerifyTokenHelper,
-                            EmailService emailService)
+                            EmailVerifyTokenHelper emailVerifyTokenHelper)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
@@ -42,7 +38,6 @@ namespace Auth.Application.UserManager
             _authTokenHelper = authTokenHelper;
             _resetPasswordTokenHelper = resetPasswordTokenHelper;
             _emailVerifyTokenHelper = emailVerifyTokenHelper;
-            _emailService = emailService;
         }
 
         private AuthentificateResult Authentificate(string email, string password)
@@ -147,7 +142,7 @@ namespace Auth.Application.UserManager
                     {
                         new Role()
                         {
-                            Id = Domain.UserAggregate.Enums.Role.User,
+                            RoleEnum = Domain.UserAggregate.Enums.Role.User,
                             Description = Domain.UserAggregate.Enums.Role.User.ToString() + " Role",
                             Name = Domain.UserAggregate.Enums.Role.User.ToString()
                         }
@@ -166,58 +161,6 @@ namespace Auth.Application.UserManager
                 
             return new RegisterResult(registeredUser, emailVerifyTokenResult.EmailVerificationToken);
         }
-
-        //private void SendVerifyTokenLinkEmail(User user, string Link)
-        //{
-        //    var email = new SendEmailModel()
-        //    {
-        //        EmailAddressesTo = new List<EmailAddress>()
-        //        {
-        //            new EmailAddress()
-        //            {
-        //                Address = user.Email,
-        //                Name = ""
-        //            }
-        //        },
-        //        EmailAddressesFrom = new List<EmailAddress>()
-        //        {
-        //            new EmailAddress()
-        //            {
-        //                Address = "auth@auth.com",
-        //                Name = "Auth"
-        //            }
-        //        },
-        //        Subject = "Confirm Email Link",
-        //        Body = $"{Link}"
-        //    };
-        //    _emailService.SendEmail(email);
-        //}
-
-        //private void SendResetPasswordTokenEmail(User user, string token)
-        //{
-        //    var email = new SendEmailModel()
-        //    {
-        //        EmailAddressesTo = new List<EmailAddress>()
-        //        {
-        //            new EmailAddress()
-        //            {
-        //                Address = user.Email,
-        //                Name = ""
-        //            }
-        //        },
-        //        EmailAddressesFrom = new List<EmailAddress>()
-        //        {
-        //            new EmailAddress()
-        //            {
-        //                Address = "auth@auth.com",
-        //                Name = "Auth"
-        //            }
-        //        },
-        //        Subject = "Reset Password Token",
-        //        Body = $"{token}"
-        //    };
-        //    _emailService.SendEmail(email);
-        //}
 
         public DeleteUserResult DeleteUser(DeleteUserParams deleteUserParams)
         {

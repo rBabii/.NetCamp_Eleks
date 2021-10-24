@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Result.Base;
+using External.Result.Base;
 
 namespace Auth.Application.UserManager.Result
 {

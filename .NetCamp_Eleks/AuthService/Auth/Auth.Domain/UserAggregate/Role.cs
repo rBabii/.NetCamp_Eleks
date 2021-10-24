@@ -8,7 +8,8 @@ namespace Auth.Domain.UserAggregate
 {
     public class Role
     {
-        public Enums.Role Id { get; set; }
+        public int Id { get; set; }
+        public Enums.Role RoleEnum { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
