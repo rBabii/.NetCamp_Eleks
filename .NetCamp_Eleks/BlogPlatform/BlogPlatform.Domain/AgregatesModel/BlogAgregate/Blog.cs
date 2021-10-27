@@ -1,4 +1,5 @@
 ﻿using BlogPlatform.Domain.AgregatesModel.PostAgregate;
+using BlogPlatform.Domain.AgregatesModel.UserAgregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace BlogPlatform.Domain.AgregatesModel.BlogAgregate
     {
         public int BlogId { get; set; }
         public int UserId { get; set; }
+        public User User { get; set; }
         public string BlogUrl { get; set; }
         public IEnumerable<Post> Posts { get; }
         public DateTime DateCreated { get; set; }

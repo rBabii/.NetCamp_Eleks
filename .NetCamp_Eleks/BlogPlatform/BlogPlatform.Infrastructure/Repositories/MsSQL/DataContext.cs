@@ -1,5 +1,6 @@
 ﻿using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
+using BlogPlatform.Domain.AgregatesModel.UserAgregate;
 using BlogPlatform.Infrastructure.Repositories.MsSQL.ModelCreating;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,6 +22,7 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
         {
             FluentApiModelCreating.BuildBlogModel(modelBuilder);
             FluentApiModelCreating.BuildPostModel(modelBuilder);
+            FluentApiModelCreating.BuildUserModel(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
         {
@@ -28,5 +30,6 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
         }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

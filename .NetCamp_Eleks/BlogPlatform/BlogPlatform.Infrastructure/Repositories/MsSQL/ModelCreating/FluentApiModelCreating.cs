@@ -1,5 +1,6 @@
 ﻿using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
+using BlogPlatform.Domain.AgregatesModel.UserAgregate;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,29 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL.ModelCreating
                 .HasOne<Blog>(p => p.Blog)
                 .WithMany(b => b.Posts)
                 .HasForeignKey(p => p.BlogId);
+        }
+
+        public static void BuildUserModel(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasKey(u => u.Id);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.AuthResourceUserId)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.PhoneNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Blog)
+                .WithOne(b => b.User)
+                .HasForeignKey<Blog>(b => b.UserId);
         }
     }
 }

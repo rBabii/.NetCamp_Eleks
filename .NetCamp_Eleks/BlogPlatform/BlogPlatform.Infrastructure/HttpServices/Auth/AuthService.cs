@@ -164,5 +164,37 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
 
             return errorResult;
         }
+
+        public async Task<HttpResult<object>> IsValidUser(IsValidRequest isValidRequest)
+        {
+            var body = new StringContent(
+                JsonSerializer.Serialize(isValidRequest),
+                Encoding.UTF8,
+                "application/json"
+                );
+
+            var response = await _httpClient.PostAsync("api/auth/IsValid", body);
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var successResponseStream = await response.Content.ReadAsStreamAsync();
+
+                var successResult = new HttpResult<object>(response.StatusCode)
+                { };
+
+                return successResult;
+            }
+
+            using var errorResponseStream = await response.Content.ReadAsStreamAsync();
+            var errorObject = await JsonSerializer.DeserializeAsync
+                <Error>(errorResponseStream, JsonSerializerOptions);
+
+            var errorResult = new HttpResult<object>(response.StatusCode)
+            {
+                Error = errorObject
+            };
+
+            return errorResult;
+        }
     }
 }

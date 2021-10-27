@@ -2,12 +2,15 @@ using BlogPlatform.Application.Managers.AuthManager;
 using BlogPlatform.Application.Managers.BlogManager;
 using BlogPlatform.Application.Managers.EmailManager;
 using BlogPlatform.Application.Managers.PostManager;
+using BlogPlatform.Application.Managers.UserManager;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
+using BlogPlatform.Domain.AgregatesModel.UserAgregate;
 using BlogPlatform.Infrastructure.HttpServices.Auth;
 using BlogPlatform.Infrastructure.HttpServices.Email;
 using BlogPlatform.Infrastructure.Repositories.MsSQL;
 using External.Options.Auth;
+using External.Options.BlogPlatform;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +21,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace BlogPlatform.Api
 {
@@ -34,7 +38,10 @@ namespace BlogPlatform.Api
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(opt =>
+            {
+                opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             services.AddSwaggerGen();
 
             services.AddHttpClient<AuthService>(c =>
@@ -49,22 +56,22 @@ namespace BlogPlatform.Api
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
             });
 
-
-
             services.AddDbContext<DataContext>(opts => opts.UseSqlServer(Configuration["Data:ConnectionStrings:DefaultConnection"]));
             services.AddScoped<IBlogRepository, MsSqlBlogRepository>();
             services.AddScoped<IPostRepository, MsSqlPostRepository>();
+            services.AddScoped<IUserRepository, MsSqlUserRepository>();
             services.AddScoped<BlogManager>();
             services.AddScoped<PostManager>();
             services.AddScoped<AuthManager>();
             services.AddScoped<EmailManager>();
+            services.AddScoped<UserManager>();
 
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202")
+                    builder.WithOrigins("http://localhost:4200", "http://localhost:4201", "http://localhost:4202", "http://192.168.0.100:4200")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -93,6 +100,9 @@ namespace BlogPlatform.Api
                         ClockSkew = TimeSpan.Zero
                     };
                 });
+
+            var frontAppOptionsConfigurations = Configuration.GetSection("FrontApp");
+            services.Configure<FrontAppOptions>(frontAppOptionsConfigurations);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

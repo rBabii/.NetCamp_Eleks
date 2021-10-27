@@ -10,7 +10,10 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using BlogPlatform.Application.Managers.EmailManager;
 using BlogPlatform.Application.Managers.EmailManager.Params;
+using Microsoft.Extensions.Options;
+using External.Options.BlogPlatform;
 
 namespace BlogPlatform.Application.Managers.AuthManager
 {
@@ -18,11 +21,13 @@ namespace BlogPlatform.Application.Managers.AuthManager
     {
         private readonly AuthService _authService;
         private readonly EmailManager.EmailManager _emailManager;
+        private readonly IOptions<FrontAppOptions> _frontAppOptions;
 
-        public AuthManager(AuthService authService, EmailManager.EmailManager emailManager)
+        public AuthManager(AuthService authService, EmailManager.EmailManager emailManager, IOptions<FrontAppOptions> frontAppOptions)
         {
             _authService = authService;
             _emailManager = emailManager;
+            _frontAppOptions = frontAppOptions;
         }
 
         public async Task<RegisterResult> Register(RegisterParams registerParams)
@@ -51,8 +56,8 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 {
                     new EmailAddress()
                     {
-                        Name = "BlogPlatform",
-                        Address = "noreply@BlogPlatForm.com"
+                        Name = "BlogPlat-form",
+                        Address = "noreply@BlogPlat-Form.com"
                     }
                 },
                 EmailAddressesTo = new List<EmailAddress>()
@@ -64,7 +69,7 @@ namespace BlogPlatform.Application.Managers.AuthManager
                     }
                 },
                 Subject = "Verfy Email",
-                Body = result.ResponseObject.EmailVerifyToken
+                Body = string.Format("<a href='{0}'>Verify Email</a>", _frontAppOptions.Value.VerifyUserUrl + "?token=" + result.ResponseObject.EmailVerifyToken)
             });
 
             //SEND EMAIL WITH VERIFY LINK (url?token={resetPasswordToken})
