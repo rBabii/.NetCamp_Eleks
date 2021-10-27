@@ -1,0 +1,71 @@
+<div *mobxAutorun>
+  <div class="login-form">
+    <form [formGroup]="LoginForm" (ngSubmit)="OnSubmit()">
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Enter your email</mat-label>
+        <input matInput placeholder="example@example.com" [formControl]="Email" required>
+        <mat-error *ngIf="Email.invalid">
+          <div *ngIf="Email.errors.email">
+            Invalid Email Address
+          </div>
+          <div *ngIf="Email.errors.required">
+            Email Address is required
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Enter your password</mat-label>
+        <input matInput [type]="HidePassword ? 'password' : 'text'" [formControl]="Password" required>
+        <a mat-icon-button matSuffix (click)="$event.preventDefault(); HidePassword = !HidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="HidePassword">
+          <mat-icon>{{HidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+        </a>
+        <mat-error *ngIf="Password.invalid">
+          <div *ngIf="Password.errors.required">
+            Password is required.
+          </div>
+          <div *ngIf="!Password.errors.required && Password.errors.passwordRegexNotPass">
+            <div class="font-italic" style="font-size: 14px;">Invalid Password:</div>
+            <div class="row">
+              <div class="col-6">
+                <ul>
+                  <li>
+                    Minimum eight characters.
+                  </li>
+                  <li>
+                    At least one uppercase letter.
+                  </li>
+                  <li>
+                    One lowercase letter.
+                  </li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <ul>
+                  <li>
+                    One number.
+                  </li>
+                  <li>
+                    One special character.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-error class="margtop3rem" *ngIf="LoginForm.invalid">
+        <div *ngIf="LoginForm.errors?.responseErrorMessages">
+          <div *ngFor="let error of LoginForm.errors.responseErrorMessages">
+            {{error}}
+          </div>
+        </div>
+      </mat-error>
+
+      <div class="margtop3rem">
+        <button type="submit" mat-raised-button color="primary">Login!</button>
+      </div>
+    </form>
+  </div>
+</div>

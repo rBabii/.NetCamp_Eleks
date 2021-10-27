@@ -1,0 +1,17 @@
+<button [matMenuTriggerFor]="menu" #menuTrigger disabled="{{notificationStore.Count < 1 ? 'true' : 'false'}}" matBadge="{{notificationStore.Count < 1 ? '' : notificationStore.Count}}" mat-mini-fab color="primary">
+  <mat-icon>notifications</mat-icon>
+</button>
+<mat-menu xPosition="before" class="notification-menu" #menu="matMenu">
+  <div style="width: 400px; padding: 10px;" *ngIf="notificationStore.Notifications.length > 0">
+    <div class="notification-menu-item d-flex align-items-center justify-content-center" style="padding: 10px" *ngFor="let notification of notificationStore.Notifications">
+      <div>
+        {{notification.message}}
+      </div>
+      <div style="padding-left: 20px;">
+        <a *ngIf="notification.key == 'IsUserSetuped'" routerLink="/update-profile" mat-mini-fab color="primary">
+          <mat-icon>build</mat-icon>
+        </a>
+      </div>
+    </div>
+  </div>
+</mat-menu>

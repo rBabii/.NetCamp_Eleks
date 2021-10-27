@@ -1,0 +1,39 @@
+<!-- Begin Site Title
+================================================== -->
+<div class="container">
+  <div class="mainheading">
+    <h1 class="sitetitle">Mediumish</h1>
+    <p class="lead">
+      Bootstrap theme, medium style, simply perfect for bloggers
+    </p>
+  </div>
+  <!-- End Site Title
+  ================================================== -->
+
+  <!-- Begin Featured
+  ================================================== -->
+  <section class="featured-posts">
+    <div class="section-title">
+      <h2><span>Featured</span></h2>
+    </div>
+    <div class="card-columns listfeaturedtag">
+      <app-featured-post *ngFor="let postData of FeaturedPostData" [data]="postData"></app-featured-post>
+    </div>
+  </section>
+  <!-- End Featured
+  ================================================== -->
+
+  <!-- Begin List Posts
+  ================================================== -->
+  <section class="recent-posts">
+    <div class="section-title">
+      <h2><span>All Stories</span></h2>
+    </div>
+    <div class="card-columns listrecent">
+      <app-story-post *ngFor="let postData of StoryPostData" [data]="postData"></app-story-post>
+    </div>
+  </section>
+  <!-- End List Posts
+  ================================================== -->
+
+</div>

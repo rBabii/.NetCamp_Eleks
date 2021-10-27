@@ -1,0 +1,76 @@
+<div *mobxAutorun>
+  <div class="profile-form">
+    <form [formGroup]="UpdateUserForm" (ngSubmit)="OnSubmit()">
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Enter your First Name</mat-label>
+        <input matInput [formControl]="FirstName" required>
+        <mat-error *ngIf="FirstName.invalid">
+          <div *ngIf="FirstName.errors.required">
+            First Name is required
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Enter your Last Name</mat-label>
+        <input matInput [formControl]="LastName" required>
+        <mat-error *ngIf="LastName.invalid">
+          <div *ngIf="LastName.errors.required">
+            Last Name is required
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Select Gender</mat-label>
+        <mat-select required [formControl]="GenderDdl">
+          <mat-option *ngFor="let gender of GenderEnum | enumToArray" [value]="gender.value">
+            {{gender.key}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="GenderDdl.invalid">
+          <div *ngIf="GenderDdl.errors.required">
+            Gender is required
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Enter your Birth Date</mat-label>
+        <input [formControl]="BirthDate" required matInput [matDatepicker]="picker">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="BirthDate.invalid">
+          <div *ngIf="BirthDate.errors.required">
+            Birth Date is required
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="margtop3rem w-100" appearance="fill">
+        <mat-label>Enter your Phone Number</mat-label>
+        <input matInput [formControl]="PhoneNumber" required>
+        <mat-error *ngIf="PhoneNumber.invalid">
+          <div *ngIf="PhoneNumber.errors.required">
+            Phone Number is required
+          </div>
+          <div *ngIf="!PhoneNumber.errors.required && PhoneNumber.errors.phoneRegexNotPass">
+            Invalid Phone Number
+          </div>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-error class="margtop3rem" *ngIf="UpdateUserForm.invalid">
+        <div *ngIf="UpdateUserForm.errors?.responseErrorMessages">
+          <div *ngFor="let error of UpdateUserForm.errors.responseErrorMessages">
+            {{error}}
+          </div>
+        </div>
+      </mat-error>
+
+      <div class="margtop3rem">
+        <button type="submit" mat-raised-button color="primary">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>

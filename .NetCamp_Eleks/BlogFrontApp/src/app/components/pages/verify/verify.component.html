@@ -1,0 +1,23 @@
+<div style="min-height: 85%;" class="d-flex align-items-center justify-content-center">
+  <div>
+    <div class="d-flex flex-column justify-content-center align-items-center" *ngIf="!Result">
+      <h2>User successfully verified.</h2>
+      <div class="d-flex">
+        <a class="nav-link" routerLink="/">Stories <span class="sr-only">(current)</span></a>
+
+        <a *ngIf="!loginStore.IsAuthentificated" class="nav-link" routerLink="/login">Login</a>
+      </div>
+    </div>
+    <div *ngIf="Result && Result.errorMessages">
+      <div class="d-flex flex-column justify-content-center align-items-center">
+        <div *ngFor="let message of Result.errorMessages">
+          <h2>{{message}}</h2>
+        </div>
+        <div class="d-flex">
+          <a class="nav-link" routerLink="/">Stories <span class="sr-only">(current)</span></a>
+          <a *ngIf="!loginStore.IsAuthentificated" class="nav-link" routerLink="/login">Login</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
