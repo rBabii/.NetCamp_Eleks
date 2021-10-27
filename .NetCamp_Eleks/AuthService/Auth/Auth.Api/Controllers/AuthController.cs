@@ -25,6 +25,80 @@ namespace Auth.Api.Controllers
             _userManager = userManager;
         }
 
+        [Authorize]
+        [Route("api/[controller]/IsVerified")]
+        [HttpPost]
+        public IActionResult IsVerified()
+        {
+            try
+            {
+                var ClaimUserID = HttpContext.User.Claims.FirstOrDefault(c => c.Properties.FirstOrDefault().Value == JwtRegisteredClaimNames.Sub);
+                if (ClaimUserID == null)
+                {
+                    return Forbid();
+                }
+                if (Int32.TryParse(ClaimUserID.Value, out int UserID) && UserID != 0)
+                {
+                    var result = _userManager.IsVerified(new IsVerifiedParams()
+                    {
+                        UserId = UserID
+                    });
+                    if (!result.IsValid && !result.CanContinue)
+                    {
+                        return BadRequest(new External.DTOs.Common.Models.Error()
+                        {
+                            ErrorMessages = result.Error.ErrorMessages,
+                            ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                        });
+                    }
+                    return Ok(new IsVerifiedResponse()
+                    {
+                        IsVerified = result.IsVerified
+                    });
+                }
+                return Forbid();
+            }
+            catch (UserUpdateException ex)
+            {
+                return StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Route("api/[controller]/IsValid")]
+        [HttpPost]
+        public IActionResult IsValid(IsValidRequest request)
+        {
+            try
+            {
+                var loginResult = _userManager.IsValid(new IsValidParams()
+                {
+                    UserEmail = request.UserEmail,
+                    UserId = request.UserId
+                });
+                if (!loginResult.IsValid && !loginResult.CanContinue)
+                {
+                    return BadRequest(new External.DTOs.Common.Models.Error()
+                    {
+                        ErrorMessages = loginResult.Error.ErrorMessages,
+                        ErrorType = (External.DTOs.Common.Enums.ErrorType)loginResult.Error.ErrorType
+                    });
+                }
+                return Ok();
+            }
+            catch (UserUpdateException ex)
+            {
+                return StatusCode(500);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
         [Route("api/[controller]/login")]
         [HttpPost]
         public IActionResult Login(LoginRequest request)

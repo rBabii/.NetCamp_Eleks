@@ -20,17 +20,39 @@ namespace Auth.Infrastructure.Repositories.MsSql
             if (user.Id == default)
             {
                 _dataContext.Entry(user).State = EntityState.Added;
-                foreach(var role in user.Roles)
+                if (user.Roles != null)
                 {
-                    _dataContext.Entry(role).State = EntityState.Added;
+                    foreach (var role in user.Roles)
+                    {
+                        if(role.Id == default)
+                        {
+                            _dataContext.Entry(role).State = EntityState.Added;
+
+                        }
+                        else
+                        {
+                            _dataContext.Entry(role).State = EntityState.Modified;
+                        }
+                    }
                 }
             }
             else
             {
                 _dataContext.Entry(user).State = EntityState.Modified;
-                foreach (var role in user.Roles)
+                if(user.Roles != null)
                 {
-                    _dataContext.Entry(role).State = EntityState.Added;
+                    foreach (var role in user.Roles)
+                    {
+                        if (role.Id == default)
+                        {
+                            _dataContext.Entry(role).State = EntityState.Added;
+
+                        }
+                        else
+                        {
+                            _dataContext.Entry(role).State = EntityState.Modified;
+                        }
+                    }
                 }
             }
             _dataContext.SaveChanges();
@@ -55,17 +77,20 @@ namespace Auth.Infrastructure.Repositories.MsSql
 
         public User Get(int id)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.Id == id);
+            var res = _dataContext.Users.Where(u => u.Id == id).Include(u => u.Roles).SingleOrDefault();
+            return res;
         }
 
         public User GetByEmail(string email)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.Email == email);
+            var res = _dataContext.Users.Where(u => u.Email == email).Include(u => u.Roles).SingleOrDefault();
+            return res;
         }
 
         public User GetByRefreshToken(string refreshToken)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.RefreshToken == refreshToken);
+            var res = _dataContext.Users.Where(u => u.RefreshToken == refreshToken).Include(u => u.Roles).SingleOrDefault();
+            return res;
         }
     }
 }

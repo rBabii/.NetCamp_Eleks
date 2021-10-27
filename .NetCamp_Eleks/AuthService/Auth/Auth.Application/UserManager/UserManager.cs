@@ -282,5 +282,39 @@ namespace Auth.Application.UserManager
             }
             return new VerifyEmailResult(new Error("Invalid token.", ErrorType.Validation));
         }
+
+        public IsValidResult IsValid(IsValidParams isValidParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(isValidParams);
+            if (validateErrorResult != null)
+            {
+                return new IsValidResult(validateErrorResult);
+            }
+            var user = _userRepository.Get(isValidParams.UserId);
+            if(user == null)
+            {
+                return new IsValidResult(new Error($"User with Id: {isValidParams.UserId} does not exist.", ErrorType.Validation));
+            }
+            if(user.Email != isValidParams.UserEmail)
+            {
+                return new IsValidResult(new Error($"Email: {isValidParams.UserEmail} does not to user with Id: {isValidParams.UserId}", ErrorType.Validation));
+            }
+            return new IsValidResult();
+        }
+
+        public IsVerifiedResult IsVerified(IsVerifiedParams isVerifiedParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(isVerifiedParams);
+            if (validateErrorResult != null)
+            {
+                return new IsVerifiedResult(false, validateErrorResult);
+            }
+            var user = _userRepository.Get(isVerifiedParams.UserId);
+            if(user == null)
+            {
+                return new IsVerifiedResult(false, new Error($"User with Id: {isVerifiedParams.UserId} does not exist.", ErrorType.Validation));
+            }
+            return new IsVerifiedResult(user.IsVerified);
+        }
     }
 }
