@@ -10,7 +10,7 @@ export function _tokenGetter(): string {
     JwtModule.forRoot({
       config: {
         tokenGetter: _tokenGetter,
-        allowedDomains: ['localhost:5000', 'localhost:5001'],
+        allowedDomains: ['localhost:5000', 'localhost:5001', 'localhost:5002', 'localhost:5003'],
         authScheme: 'Bearer ',
         skipWhenExpired: true
       }

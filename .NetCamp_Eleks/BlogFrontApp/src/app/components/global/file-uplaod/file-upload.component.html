@@ -1,0 +1,20 @@
+<div *mobxAutorun class="row align-items-center" style="margin-bottom: 0px;">
+  <div class="col-md-9">
+    <div class="upload" *ngIf="progress > 0">
+      {{progress}}%
+    </div>
+    <div class="upload" *ngIf="messages && messages.length > 0">
+      <div *ngFor="let message of messages">
+        {{message}}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;">
+    <div style="padding: 6px 15px;">
+      <button (click)="file.click()" mat-mini-fab color="primary">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

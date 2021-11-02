@@ -8,8 +8,12 @@ import {RegisterComponent} from './components/global/register/register.component
 import {LoginComponent} from './components/global/login/login.component';
 import {LoginRegisterGuardGuard} from './guards/login-register-guard.guard';
 import {VerifyComponent} from './components/pages/verify/verify.component';
-import {UpdateProfileComponent} from './components/pages/update-profile/update-profile.component';
 import {ProfileComponent} from './components/pages/profile/profile.component';
+import {UnAuthorizedUserGuard} from './guards/unAuthorizedUser.guard';
+import {SetupBlogComponent} from './components/pages/setup-blog/setup-blog.component';
+import {SetupedBlogGuard} from './guards/setuped-blog.guard';
+import {BlogListComponent} from './components/pages/blog-list/blog-list.component';
+import {SingleBlogPageComponent} from './components/pages/single-blog-page/single-blog-page.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent},
@@ -17,9 +21,11 @@ const routes: Routes = [
   { path: 'post', component: PostComponent},
   { path: 'register', component: RegisterComponent, canActivate: [LoginRegisterGuardGuard]},
   { path: 'login', component: LoginComponent, canActivate: [LoginRegisterGuardGuard]},
-  { path: 'update-profile', component: UpdateProfileComponent},
   { path: 'verify', component: VerifyComponent},
-  { path: 'profile', component: ProfileComponent},
+  { path: 'blog', component: BlogListComponent},
+  { path: 'blog/:blogUrl', component: SingleBlogPageComponent},
+  { path: 'profile', component: ProfileComponent, canActivate: [UnAuthorizedUserGuard]},
+  { path: 'setup-blog', component: SetupBlogComponent, canActivate: [UnAuthorizedUserGuard, SetupedBlogGuard]},
   { path: '**', component: NotFoundComponent},
 ];
 

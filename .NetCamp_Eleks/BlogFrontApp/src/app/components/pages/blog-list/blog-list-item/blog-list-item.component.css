@@ -1,0 +1,9 @@
+.blog-card{
+  max-width: 700px;
+  margin: 25px auto;
+  cursor: pointer;
+  transition: 0.3s;
+}
+.blog-card:hover {
+  transform: scale(1.1);
+}

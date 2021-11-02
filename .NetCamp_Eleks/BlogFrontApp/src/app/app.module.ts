@@ -22,9 +22,14 @@ import {JwtConfigModule} from './modules/jwt-config.module';
 import {httpInterceptorProviders} from './http-interceptors/interceptors.provider';
 import { VerifyComponent } from './components/pages/verify/verify.component';
 import { NotificationComponent } from './components/global/notification/notification.component';
-import { UpdateProfileComponent } from './components/pages/update-profile/update-profile.component';
 import {EnumToArrayPipe} from './pipes/EnumToArrayPipe';
 import { ProfileComponent } from './components/pages/profile/profile.component';
+import { SetupBlogComponent } from './components/pages/setup-blog/setup-blog.component';
+import { UpdateProfileMessageComponent } from './components/global/update-profile-message/update-profile-message.component';
+import { BlogListComponent } from './components/pages/blog-list/blog-list.component';
+import { BlogListItemComponent } from './components/pages/blog-list/blog-list-item/blog-list-item.component';
+import { SingleBlogPageComponent } from './components/pages/single-blog-page/single-blog-page.component';
+import { FileUploadComponent } from './components/global/file-uplaod/file-upload.component';
 
 @NgModule({
   declarations: [
@@ -41,9 +46,14 @@ import { ProfileComponent } from './components/pages/profile/profile.component';
     RegisterComponent,
     VerifyComponent,
     NotificationComponent,
-    UpdateProfileComponent,
     EnumToArrayPipe,
-    ProfileComponent
+    ProfileComponent,
+    SetupBlogComponent,
+    UpdateProfileMessageComponent,
+    BlogListComponent,
+    BlogListItemComponent,
+    SingleBlogPageComponent,
+    FileUploadComponent
   ],
   imports: [
     BrowserModule,

@@ -38,4 +38,15 @@ export class CustomValidators{
     }
     return null;
   }
+
+  static BlogUrlRegex(field: AbstractControl): ValidationErrors | null {
+    const regex = new RegExp('^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$');
+    if (!regex.test(field.value)) {
+      return {
+        blogUrlRegexNotPass: true
+      };
+    }
+    return null;
+  }
+
 }

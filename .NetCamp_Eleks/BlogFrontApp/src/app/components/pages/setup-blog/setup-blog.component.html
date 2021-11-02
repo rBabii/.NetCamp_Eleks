@@ -1,0 +1,77 @@
+<div style="width: 100%;" *mobxAutorun>
+  <div style="width: 100%;" *ngIf="notificationStore.IsUserSetuped">
+    <div class="setup-blog-form">
+      <div style="width: 100%; margin-top: 40px;">
+        <h2 style="text-align: center;">
+          Setup Your Own Blog Page!
+        </h2>
+      </div>
+
+      <form [formGroup]="SetupBlogForm" (ngSubmit)="OnSubmit()">
+
+        <mat-form-field class="margtop3rem w-100" appearance="fill">
+          <mat-label>Enter your Blog Url</mat-label>
+          <input matInput [formControl]="BlogUrl" required>
+          <mat-error *ngIf="BlogUrl.invalid">
+            <div *ngIf="BlogUrl.errors.required">
+              Blog Url is required.
+            </div>
+            <div *ngIf="!BlogUrl.errors.required && BlogUrl.errors.blogUrlRegexNotPass">
+              Invalid Blog Url.
+            </div>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="margtop3rem w-100" appearance="fill">
+          <mat-label>Title</mat-label>
+          <input matInput [formControl]="Title" required>
+          <mat-error *ngIf="Title.invalid">
+            <div *ngIf="Title.errors.required">
+              Title field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="margtop3rem w-100" appearance="fill">
+          <mat-label>Sub Title</mat-label>
+          <input matInput [formControl]="SubTitle" required>
+          <mat-error *ngIf="SubTitle.invalid">
+            <div *ngIf="SubTitle.errors.required">
+              Sub Title Field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="margtop3rem w-100" appearance="fill">
+          <mat-label>Visibility</mat-label>
+          <mat-select [formControl]="Visible" required>
+            <mat-option [value]="true">
+              Visible
+            </mat-option>
+            <mat-option [value]="false">
+              Hidden
+            </mat-option>
+          </mat-select>
+
+          <mat-error *ngIf="Visible.invalid">
+            <div *ngIf="Visible.errors.required">
+              Visibility field is required.
+            </div>
+          </mat-error>
+        </mat-form-field>
+
+        <mat-error class="margtop3rem" *ngIf="SetupBlogForm.invalid">
+          <div *ngIf="SetupBlogForm.errors?.responseErrorMessages">
+            <div *ngFor="let error of SetupBlogForm.errors.responseErrorMessages">
+              {{error}}
+            </div>
+          </div>
+        </mat-error>
+
+        <div class="margtop3rem">
+          <button type="submit" mat-raised-button color="primary">Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

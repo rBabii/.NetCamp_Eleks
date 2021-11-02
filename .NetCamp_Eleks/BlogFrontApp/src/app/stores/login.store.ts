@@ -31,10 +31,10 @@ class LoginStore {
       localStorage.setItem('accessToken', this.AuthResult.accessToken);
       localStorage.setItem('refreshToken', this.AuthResult.refreshToken);
       await this.CheckIsAuth();
-      this.notificationStore.Init();
+      await this.notificationStore.Init();
       return this.AuthResult;
     }
-    this.notificationStore.Init();
+    await this.notificationStore.Init();
     return this.AuthResult;
   }
 
@@ -61,7 +61,7 @@ class LoginStore {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     await this.CheckIsAuth();
-    this.notificationStore.Init();
+    await this.notificationStore.Init();
     return result;
   }
 

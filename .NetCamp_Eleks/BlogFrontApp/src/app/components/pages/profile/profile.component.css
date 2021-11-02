@@ -38,3 +38,9 @@
   cursor: pointer;
   border: solid 1px #BA68C8
 }
+
+.user-image{
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}

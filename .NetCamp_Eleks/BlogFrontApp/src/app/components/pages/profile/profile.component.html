@@ -1,40 +1,106 @@
-<div class="container rounded bg-white mt-5 mb-5">
+<div *mobxAutorun class="container rounded bg-white mt-5 mb-5">
+  <form [formGroup]="UpdateUserForm" (ngSubmit)="OnSubmit()">
   <div class="row">
-    <div class="col-md-3 border-right">
-      <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">Edogaru</span><span class="text-black-50">edogaru@mail.com.my</span><span> </span></div>
+    <div class="col-md-6 border-right">
+      <div class="d-flex flex-column align-items-center text-center p-3 py-5">
+        <div>
+          <app-file-uplaod (onUploadFinished)="UploadFinished($event)"></app-file-uplaod>
+        </div>
+
+        <div class="user-image rounded-circle" style="width: 150px; height: 150px; background-image: url('{{userStore.User?.imageUrl ? userStore.User.imageUrl : 'https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg'}}')">
+
+        </div>
+        <span class="font-weight-bold">{{userStore.User?.firstName}} {{userStore.User?.lastName}}</span>
+        <span class="text-black-50">{{userStore.User?.email}}</span>
+        <span> </span>
+      </div>
     </div>
-    <div class="col-md-5 border-right">
+    <div class="col-md-6 border-right">
       <div class="p-3 py-5">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4 class="text-right">Profile Settings</h4>
         </div>
         <div class="row mt-2">
-          <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control" placeholder="first name" value=""></div>
-          <div class="col-md-6"><label class="labels">Surname</label><input type="text" class="form-control" value="" placeholder="surname"></div>
+          <div class="col-md-6">
+            <mat-form-field class="margtop3rem w-100" appearance="fill">
+              <mat-label>Enter your First Name</mat-label>
+              <input matInput [formControl]="FirstName" required>
+              <mat-error *ngIf="FirstName.invalid">
+                <div *ngIf="FirstName.errors.required">
+                  First Name is required
+                </div>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-md-6">
+            <mat-form-field class="margtop3rem w-100" appearance="fill">
+              <mat-label>Enter your Last Name</mat-label>
+              <input matInput [formControl]="LastName" required>
+              <mat-error *ngIf="LastName.invalid">
+                <div *ngIf="LastName.errors.required">
+                  Last Name is required
+                </div>
+              </mat-error>
+            </mat-form-field>
+          </div>
         </div>
         <div class="row mt-3">
-          <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" class="form-control" placeholder="enter phone number" value=""></div>
-          <div class="col-md-12"><label class="labels">Address Line 1</label><input type="text" class="form-control" placeholder="enter address line 1" value=""></div>
-          <div class="col-md-12"><label class="labels">Address Line 2</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
-          <div class="col-md-12"><label class="labels">Postcode</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
-          <div class="col-md-12"><label class="labels">State</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
-          <div class="col-md-12"><label class="labels">Area</label><input type="text" class="form-control" placeholder="enter address line 2" value=""></div>
-          <div class="col-md-12"><label class="labels">Email ID</label><input type="text" class="form-control" placeholder="enter email id" value=""></div>
-          <div class="col-md-12"><label class="labels">Education</label><input type="text" class="form-control" placeholder="education" value=""></div>
+          <div class="col-md-12">
+            <mat-form-field class="margtop3rem w-100" appearance="fill">
+              <mat-label>Select Gender</mat-label>
+              <mat-select required [formControl]="GenderDdl">
+                <mat-option *ngFor="let gender of GenderEnum | enumToArray" [value]="gender.value">
+                  {{gender.key}}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="GenderDdl.invalid">
+                <div *ngIf="GenderDdl.errors.required">
+                  Gender is required
+                </div>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-md-12">
+            <mat-form-field class="margtop3rem w-100" appearance="fill">
+              <mat-label>Enter your Birth Date</mat-label>
+              <input [formControl]="BirthDate" required matInput [matDatepicker]="picker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="BirthDate.invalid">
+                <div *ngIf="BirthDate.errors.required">
+                  Birth Date is required
+                </div>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-md-12">
+            <mat-form-field class="margtop3rem w-100" appearance="fill">
+              <mat-label>Enter your Phone Number</mat-label>
+              <input matInput [formControl]="PhoneNumber" required>
+              <mat-error *ngIf="PhoneNumber.invalid">
+                <div *ngIf="PhoneNumber.errors.required">
+                  Phone Number is required
+                </div>
+                <div *ngIf="!PhoneNumber.errors.required && PhoneNumber.errors.phoneRegexNotPass">
+                  Invalid Phone Number
+                </div>
+              </mat-error>
+            </mat-form-field>
+          </div>
         </div>
-        <div class="row mt-3">
-          <div class="col-md-6"><label class="labels">Country</label><input type="text" class="form-control" placeholder="country" value=""></div>
-          <div class="col-md-6"><label class="labels">State/Region</label><input type="text" class="form-control" value="" placeholder="state"></div>
+        <div class="mt-5 text-center">
+          <mat-error class="margtop3rem" *ngIf="UpdateUserForm.invalid">
+            <div *ngIf="UpdateUserForm.errors?.responseErrorMessages">
+              <div *ngFor="let error of UpdateUserForm.errors.responseErrorMessages">
+                {{error}}
+              </div>
+            </div>
+          </mat-error>
+
+          <button type="submit" mat-raised-button color="primary">Update Profile</button>
         </div>
-        <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="button">Save Profile</button></div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="p-3 py-5">
-        <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
-        <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience" value=""></div> <br>
-        <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details" value=""></div>
       </div>
     </div>
   </div>
+  </form>
 </div>

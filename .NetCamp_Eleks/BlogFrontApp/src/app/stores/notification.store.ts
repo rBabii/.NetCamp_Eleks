@@ -10,6 +10,7 @@ import {Notification} from '../models/Notification';
   providedIn: 'root'
 })
 class NotificationStore {
+
   @observable
   IsVerified = false;
 
@@ -24,30 +25,34 @@ class NotificationStore {
     this.Init();
   }
   public async Init(): Promise<void> {
-    this.Notifications = [];
-    if (!this.jwtHelper.isTokenExpired()){
-      const IsVerified = await this.authAuthService.IsVerified();
-      if (IsVerified && 'isVerified' in IsVerified) {
-        this.IsVerified = IsVerified.isVerified;
-        if (!this.IsVerified){
-          this.Notifications.push({
-              key: 'IsVerified',
-              message: 'Your email is not verified.'
-          });
+      this.Notifications = [];
+      if (!this.jwtHelper.isTokenExpired()){
+        const IsVerified = await this.authAuthService.IsVerified();
+        if (IsVerified && 'isVerified' in IsVerified) {
+          this.IsVerified = IsVerified.isVerified;
+          if (!this.IsVerified){
+            if (!this.Notifications.find(n => n.key === 'IsVerified')){
+              this.Notifications.push({
+                key: 'IsVerified',
+                message: 'Your email is not verified.'
+              });
+            }
+          }
         }
-      }
 
-      const IsUserSetuped = await this.blogUserService.IsUserSetuped();
-      if (IsUserSetuped && 'isUserSetuped' in IsUserSetuped) {
-        this.IsUserSetuped = IsUserSetuped.isUserSetuped;
-        if (!this.IsUserSetuped){
-          this.Notifications.push({
-              key: 'IsUserSetuped',
-              message: 'Your Account is not fully setuped.'
-          });
+        const IsUserSetuped = await this.blogUserService.IsUserSetuped();
+        if (IsUserSetuped && 'isUserSetuped' in IsUserSetuped) {
+          this.IsUserSetuped = IsUserSetuped.isUserSetuped;
+          if (!this.IsUserSetuped){
+            if (!this.Notifications.find((n => n.key === 'IsUserSetuped'))){
+              this.Notifications.push({
+                key: 'IsUserSetuped',
+                message: 'Your Account is not fully setuped.'
+              });
+            }
+          }
         }
       }
-    }
   }
 
   @computed
