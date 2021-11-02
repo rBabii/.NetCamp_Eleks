@@ -11,9 +11,10 @@ namespace BlogPlatform.Application.Managers.BlogManager.Params
     {
         [Required(ErrorMessage = "UserId is Required.")]
         [Range(1, int.MaxValue, ErrorMessage = "UserId cant be less then 1")]
-        public int UserId { get; set; }
+        public int UserId { get; set; } // Current Blog User
 
         [Required(ErrorMessage = "BlogUrl is Required.")]
+        [RegularExpression("^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$", ErrorMessage = "Invalid Blog Url.")]
         public string BlogUrl { get; set; }
 
         [Required(ErrorMessage = "Title is Required.")]

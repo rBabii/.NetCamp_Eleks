@@ -17,7 +17,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.HttpResult
         {
             get
             {
-                return (int)HttpStatusCode >= 200 && (int)HttpStatusCode < 400;
+                return (int)HttpStatusCode >= 200 && (int)HttpStatusCode < 300;
             }
         }
         public bool IsError

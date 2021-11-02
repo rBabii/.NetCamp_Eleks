@@ -103,6 +103,9 @@ namespace BlogPlatform.Api
 
             var frontAppOptionsConfigurations = Configuration.GetSection("FrontApp");
             services.Configure<FrontAppOptions>(frontAppOptionsConfigurations);
+
+            var attachmentServiceOptions = Configuration.GetSection("AttachmentServiceOptions");
+            services.Configure<AttachmentServiceOptions>(attachmentServiceOptions);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

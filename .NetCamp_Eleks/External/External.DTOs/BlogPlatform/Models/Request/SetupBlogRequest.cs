@@ -11,5 +11,6 @@ namespace External.DTOs.BlogPlatform.Models.Request
         public string Title { get; set; }
         public string SubTitle { get; set; }
         public bool Visible { get; set; }
+        public string BlogUrl { get; set; }
     }
 }

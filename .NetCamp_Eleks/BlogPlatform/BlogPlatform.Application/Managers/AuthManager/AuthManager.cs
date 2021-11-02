@@ -14,20 +14,26 @@ using BlogPlatform.Application.Managers.EmailManager;
 using BlogPlatform.Application.Managers.EmailManager.Params;
 using Microsoft.Extensions.Options;
 using External.Options.BlogPlatform;
+using BlogPlatform.Domain.AgregatesModel.UserAgregate;
 
 namespace BlogPlatform.Application.Managers.AuthManager
 {
     public class AuthManager
     {
         private readonly AuthService _authService;
+        private readonly IUserRepository _userRepository;
         private readonly EmailManager.EmailManager _emailManager;
         private readonly IOptions<FrontAppOptions> _frontAppOptions;
 
-        public AuthManager(AuthService authService, EmailManager.EmailManager emailManager, IOptions<FrontAppOptions> frontAppOptions)
+        public AuthManager(AuthService authService, 
+            EmailManager.EmailManager emailManager, 
+            IOptions<FrontAppOptions> frontAppOptions,
+            IUserRepository userRepository)
         {
             _authService = authService;
             _emailManager = emailManager;
             _frontAppOptions = frontAppOptions;
+            _userRepository = userRepository;
         }
 
         public async Task<RegisterResult> Register(RegisterParams registerParams)
@@ -49,6 +55,12 @@ namespace BlogPlatform.Application.Managers.AuthManager
             {
                 return new RegisterResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }
+
+            _userRepository.AddOrUpdate(new User()
+            {
+                AuthResourceUserId = result.ResponseObject.Id,
+                Email = result.ResponseObject.Email
+            });
 
             var emailResult = await _emailManager.Send(new EmailManager.Params.SendEmailParams() 
             {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogPlatform.Domain.AgregatesModel.UserAgregate
+namespace BlogPlatform.Application.Managers.UserManager.Resut.Childs
 {
     public class User
     {
@@ -21,5 +21,6 @@ namespace BlogPlatform.Domain.AgregatesModel.UserAgregate
         public DateTime BirthDate { get; set; }
         public string PhoneNumber { get; set; }
         public string ImageName { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

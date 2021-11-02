@@ -47,27 +47,42 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
 
         public User Get(int Id)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.Id == Id);
+            return _dataContext.Users
+                .Where(u => u.Id == Id)
+                .Include(u => u.Blog)
+                .SingleOrDefault();
         }
 
         public User GetByAuthResourceUserId(int authResourceUserId)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.AuthResourceUserId == authResourceUserId);
+            return _dataContext.Users
+                .Where(u => u.AuthResourceUserId == authResourceUserId)
+                .Include(u => u.Blog)
+                .SingleOrDefault();
         }
 
         public User GetByBlogId(int blogId)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.BlogId == blogId);
+            return _dataContext.Users
+                .Where(u => u.BlogId == blogId)
+                .Include(u => u.Blog)
+                .SingleOrDefault();
         }
 
         public User GetByEmail(string email)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.Email == email);
+            return _dataContext.Users
+                .Where(u => u.Email == email)
+                .Include(u => u.Blog)
+                .SingleOrDefault();
         }
 
         public User GetByPhoneNumber(string phoneNumber)
         {
-            return _dataContext.Users.SingleOrDefault(u => u.PhoneNumber == phoneNumber);
+            return _dataContext.Users
+                .Where(u => u.PhoneNumber == phoneNumber)
+                .Include(u => u.Blog)
+                .SingleOrDefault();
         }
     }
 }

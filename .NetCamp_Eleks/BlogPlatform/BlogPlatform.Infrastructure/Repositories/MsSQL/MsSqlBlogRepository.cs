@@ -31,11 +31,6 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
 
         public bool Delete(Blog blog)
         {
-            if(blog.Posts != null && blog.Posts.ToList().Count > 0)
-            {
-                _dataContext.Posts.RemoveRange(blog.Posts);
-            }
-
             _dataContext.Blogs.Remove(blog);
             var res = _dataContext.SaveChanges();
             if (res > 0)
@@ -47,22 +42,34 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
 
         public IEnumerable<Blog> Get()
         {
-            return _dataContext.Blogs.ToList();
+            return _dataContext.Blogs
+                .AsNoTracking()
+                .Include(b => b.User)
+                .ToList();
         }
 
         public Blog Get(int Id)
         {
-            return _dataContext.Blogs.SingleOrDefault(b => b.BlogId == Id);
+            return _dataContext.Blogs
+                .Where(b => b.BlogId == Id)
+                .Include(b => b.Posts)
+                .Include(b => b.User).SingleOrDefault();
         }
 
         public Blog GetByUrl(string url)
         {
-            return _dataContext.Blogs.SingleOrDefault(b => b.BlogUrl == url);
+            return _dataContext.Blogs
+                .Where(b => b.BlogUrl == url)
+                .Include(b => b.Posts)
+                .Include(b => b.User).SingleOrDefault();
         }
 
         public Blog GetByUserId(int userId)
         {
-            return _dataContext.Blogs.SingleOrDefault(b => b.UserId == userId);
+            return _dataContext.Blogs
+                .Where(b => b.UserId == userId)
+                .Include(b => b.Posts)
+                .Include(b => b.User).SingleOrDefault();
         }
     }
 }

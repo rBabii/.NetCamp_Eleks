@@ -23,6 +23,77 @@ namespace BlogPlatform.Api.Controllers
             _blogManager = blogManager;
         }
 
+        [Route("api/[controller]/GetSingleBlogPage/{blogUrl}")]
+        [HttpGet]
+        public IActionResult GetSingleBlogPage(string blogUrl)
+        {
+            var result = _blogManager.GetSingleBlogPage(new GetSingleBlogPageParams() 
+            {
+                BlogUrl = blogUrl
+            });
+            if (!result.IsValid && !result.CanContinue)
+            {
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new GetSingleBlogPageResponse()
+            {
+                Posts = result.Blog.Posts == null ? null : result.Blog.Posts
+                .Select(p => new External.DTOs.BlogPlatform.Models.Response.Childs.GetSingleBlogPagePostItem() 
+                {
+                    DatePosted = p.DatePosted,
+                    SubTitle = p.SubTitle,
+                    FooterContent = p.FooterContent,
+                    DateCreated = p.DateCreated,
+                    HeaderContent = p.HeaderContent,
+                    MainContent= p.MainContent,
+                    Title = p.Title
+                }).ToList(),
+                SubTitle = result.Blog.SubTitle,
+                Title = result.Blog.Title,
+                DateCreated = result.Blog.DateCreated,
+                AuthorFirstName = result.Blog.User.FirstName,
+                AuthorLastName = result.Blog.User.LastName
+            });
+        }
+
+        [Route("api/[controller]/GetBlogList")]
+        [HttpGet]
+        public IActionResult GetBlogList()
+        {
+            var result = _blogManager.GetBlogList();
+            if (!result.IsValid && !result.CanContinue)
+            {
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new GetBlogListResponse()
+            {
+                Blogs = result.Blogs != null && result.Blogs.Count > 0 ? 
+                result.Blogs
+                .Select(b => new External.DTOs.BlogPlatform.Models.Response.Childs.GetBlogListItem() 
+                {
+                    DateCreated = b.DateCreated,
+                    BlogUrl = b.BlogUrl,
+                    Title = b.Title,
+                    SubTitle = b.SubTitle,
+                    AuthorFirstName = b.User.FirstName,
+                    AuthorLastName = b.User.LastName
+                }).ToList() : null,
+                Error = result.Error != null ? new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                } : null
+            });
+        }
+
         [Authorize]
         [Route("api/[controller]/SetupBlog")]
         [HttpPost]
@@ -40,7 +111,7 @@ namespace BlogPlatform.Api.Controllers
                     var result = _blogManager.SetupBlog(new SetupBlogParams() 
                     {
                         UserId = UserID,
-                        BlogUrl = UserID.ToString(),
+                        BlogUrl = setupBlogRequest.BlogUrl,
                         Title = setupBlogRequest.Title,
                         SubTitle = setupBlogRequest.SubTitle,
                         Visible = setupBlogRequest.Visible
