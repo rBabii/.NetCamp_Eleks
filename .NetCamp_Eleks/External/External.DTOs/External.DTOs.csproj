@@ -8,4 +8,8 @@
     <Folder Include="EmailService\Models\Response\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.11" />
+  </ItemGroup>
+
 </Project>
