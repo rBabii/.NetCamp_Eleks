@@ -7,7 +7,6 @@ import {AuthentificatedUserResponse} from '../services/AuthAPI/Auth/Models/Respo
 import {AuthAuthService} from '../services/AuthAPI/Auth/auth.auth.service';
 import {LoginRequest} from '../services/AuthAPI/Auth/Models/Request/LoginRequest';
 import {RefreshTokenRequest} from '../services/AuthAPI/Auth/Models/Request/RefreshTokenRequest';
-import NotificationStore from './notification.store';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,7 @@ class LoginStore {
   @observable
   IsAuthentificated = false;
 
-  constructor(private authAuthService: AuthAuthService, private jwtHelper: JwtHelperService, private notificationStore: NotificationStore) {
+  constructor(private authAuthService: AuthAuthService, private jwtHelper: JwtHelperService) {
     makeObservable(this);
     this.CheckIsAuth();
   }
@@ -31,10 +30,8 @@ class LoginStore {
       localStorage.setItem('accessToken', this.AuthResult.accessToken);
       localStorage.setItem('refreshToken', this.AuthResult.refreshToken);
       await this.CheckIsAuth();
-      await this.notificationStore.Init();
       return this.AuthResult;
     }
-    await this.notificationStore.Init();
     return this.AuthResult;
   }
 
@@ -61,7 +58,6 @@ class LoginStore {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     await this.CheckIsAuth();
-    await this.notificationStore.Init();
     return result;
   }
 

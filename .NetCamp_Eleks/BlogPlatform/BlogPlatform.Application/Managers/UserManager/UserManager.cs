@@ -111,6 +111,7 @@ namespace BlogPlatform.Application.Managers.UserManager
                 ImageUrl = _attachmentServiceOptions.Value.AttachmentUrlPath + user.ImageName,
                 LastName = user.LastName,
                 PhoneNumber = user.PhoneNumber,
+                IsVerified = user.IsVerified
             });
         }
 

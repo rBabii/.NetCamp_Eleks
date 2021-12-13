@@ -22,5 +22,6 @@ namespace BlogPlatform.Application.Managers.UserManager.Resut.Childs
         public string PhoneNumber { get; set; }
         public string ImageName { get; set; }
         public string ImageUrl { get; set; }
+        public bool IsVerified { get; set; }
     }
 }

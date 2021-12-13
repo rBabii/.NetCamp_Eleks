@@ -22,5 +22,7 @@ namespace BlogPlatform.Domain.AgregatesModel.PostAgregate
         public string MainContent { get; set; }
         public string FooterContent { get; set; }
         public string ImageName { get; set; }
+        public string PreviewText { get; set; }
+        public PostSearch PostSearch { get; set; }
     }
 }

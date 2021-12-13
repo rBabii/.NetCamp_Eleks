@@ -21,8 +21,9 @@ export class FileUploadComponent implements OnInit {
     const fileToUpload = files[0] as File;
     const formData = new FormData();
     formData.append('image', fileToUpload, fileToUpload.name);
+    formData.append('key', '1');
     this.http
-      .post('http://localhost:5003/api/Attachment/SaveUserImage', formData, {reportProgress: true, observe: 'events'}).
+      .post('http://localhost:5003/api/Attachment/SaveSingleImage', formData, {reportProgress: true, observe: 'events'}).
     subscribe((event) => {
         if (event.type === HttpEventType.UploadProgress) {
           this.progress = Math.round(100 * event.loaded / event.total);

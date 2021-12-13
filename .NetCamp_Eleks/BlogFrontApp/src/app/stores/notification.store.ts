@@ -1,10 +1,9 @@
 import {makeObservable} from 'mobx';
 import {computed, observable} from 'mobx-angular';
-import {AuthAuthService} from '../services/AuthAPI/Auth/auth.auth.service';
 import {Injectable} from '@angular/core';
-import {BlogUserService} from '../services/BlogAPI/User/blog.user.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {Notification} from '../models/Notification';
+import UserStore from './user.store';
 
 @Injectable({
   providedIn: 'root'
@@ -20,36 +19,33 @@ class NotificationStore {
   @observable
   Notifications: Notification[] = [];
 
-  constructor(private authAuthService: AuthAuthService, private blogUserService: BlogUserService, private jwtHelper: JwtHelperService) {
+  constructor(private jwtHelper: JwtHelperService, public userStore: UserStore) {
     makeObservable(this);
-    this.Init();
   }
   public async Init(): Promise<void> {
+      await this.userStore.Init();
+
       this.Notifications = [];
       if (!this.jwtHelper.isTokenExpired()){
-        const IsVerified = await this.authAuthService.IsVerified();
-        if (IsVerified && 'isVerified' in IsVerified) {
-          this.IsVerified = IsVerified.isVerified;
-          if (!this.IsVerified){
-            if (!this.Notifications.find(n => n.key === 'IsVerified')){
-              this.Notifications.push({
-                key: 'IsVerified',
-                message: 'Your email is not verified.'
-              });
-            }
+        const IsVerified = this.userStore.IsVerified;
+        this.IsVerified = IsVerified;
+        if (!this.IsVerified){
+          if (!this.Notifications.find(n => n.key === 'IsVerified')){
+            this.Notifications.push({
+              key: 'IsVerified',
+              message: 'Your email is not verified.'
+            });
           }
         }
 
-        const IsUserSetuped = await this.blogUserService.IsUserSetuped();
-        if (IsUserSetuped && 'isUserSetuped' in IsUserSetuped) {
-          this.IsUserSetuped = IsUserSetuped.isUserSetuped;
-          if (!this.IsUserSetuped){
-            if (!this.Notifications.find((n => n.key === 'IsUserSetuped'))){
-              this.Notifications.push({
-                key: 'IsUserSetuped',
-                message: 'Your Account is not fully setuped.'
-              });
-            }
+        const IsUserSetuped = this.userStore.IsUserSetuped;
+        this.IsUserSetuped = IsUserSetuped;
+        if (!this.IsUserSetuped){
+          if (!this.Notifications.find((n => n.key === 'IsUserSetuped'))){
+            this.Notifications.push({
+              key: 'IsUserSetuped',
+              message: 'Your Account is not fully setuped.'
+            });
           }
         }
       }

@@ -4,6 +4,8 @@ import {CustomValidators} from '../../../CustomValidators/CustomValidators';
 import LoginStore from '../../../stores/login.store';
 import {Router} from '@angular/router';
 import {LoginRequest} from '../../../services/AuthAPI/Auth/Models/Request/LoginRequest';
+import {MatDialog} from '@angular/material/dialog';
+import {ForgotPasswordComponent} from '../forgot-password/forgot-password.component';
 
 @Component({
   selector: 'app-login',
@@ -21,7 +23,7 @@ export class LoginComponent implements OnInit {
 
   HidePassword = true;
 
-  constructor(public loginStore: LoginStore, private router: Router) { }
+  constructor(public loginStore: LoginStore, private router: Router, public dialog: MatDialog) { }
 
   ngOnInit(): void {
   }
@@ -42,4 +44,10 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  OpenForgotPasswordPopup(): void {
+    const dialogRef = this.dialog.open(ForgotPasswordComponent, {
+      width: 'auto',
+      height: 'auto'
+    });
+  }
 }

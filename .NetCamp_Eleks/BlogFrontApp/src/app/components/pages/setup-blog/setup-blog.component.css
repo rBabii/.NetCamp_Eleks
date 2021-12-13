@@ -2,3 +2,9 @@
   max-width: 800px;
   margin:0 auto;
 }
+.blog-image {
+  height: 400px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}

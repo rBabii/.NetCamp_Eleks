@@ -9,4 +9,5 @@ export interface GetUserResponse {
   phoneNumber: string;
   blogUrl: string;
   imageUrl: string;
+  isVerified: boolean;
 }

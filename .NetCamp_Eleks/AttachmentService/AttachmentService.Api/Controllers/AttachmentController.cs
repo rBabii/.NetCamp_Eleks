@@ -46,7 +46,8 @@ namespace AttachmentService.Api.Controllers
                 return Ok(new SaveSingleImageResponse() 
                 {
                     Key = result.Key,
-                    FileName = result.FileName
+                    FileName = result.FileName,
+                    Url = result.Url
                 });
             }
             catch (Exception ex)

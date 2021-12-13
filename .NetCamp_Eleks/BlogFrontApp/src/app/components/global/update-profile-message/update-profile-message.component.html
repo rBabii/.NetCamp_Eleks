@@ -9,7 +9,17 @@
       <app-profile></app-profile>
     </div>
   </div>
-  <div style="width: 100%; height: 100%" class="d-flex align-items-center justify-content-center" *ngIf="notificationStore.IsUserSetuped">
+  <div *ngIf="!notificationStore.IsVerified" class="d-flex flex-column align-items-center justify-content-center" style="padding: 10px">
+    <div>
+      <h2>
+        Your Account Is not Fully setuped. Please Verify your Email.
+      </h2>
+    </div>
+    <div style="width: 100%">
+      <app-email-verify-help></app-email-verify-help>
+    </div>
+  </div>
+  <div style="width: 100%; height: 100%" class="d-flex align-items-center justify-content-center" *ngIf="notificationStore.IsUserSetuped && notificationStore.IsVerified">
     <div class="d-flex flex-column align-items-center justify-content-center">
       <div>
         <h2>

@@ -1,0 +1,18 @@
+<div *mobxAutorun>
+  <h2 class="text-center margtop3rem">Check your email messages for message with verify link also in spam</h2>
+  <h3 class="text-center margtop3rem">If dont see</h3>
+
+  <div class="d-flex flex-column align-items-center justify-content-center margtop3rem">
+    <div>
+      <button (click)="SendEmail()" mat-raised-button color="primary">Send New Email</button>
+    </div>
+    <div class="margtop3rem">
+      <mat-error *ngIf="Result">
+        <div *ngFor="let message of Result.errorMessages">
+          {{message}}
+        </div>
+      </mat-error>
+    </div>
+  </div>
+</div>
+

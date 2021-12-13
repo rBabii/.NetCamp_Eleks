@@ -12,6 +12,7 @@ export class NotificationComponent implements OnInit {
   constructor(public notificationStore: NotificationStore) { }
 
   ngOnInit(): void {
+    this.notificationStore.Init();
   }
 
 }

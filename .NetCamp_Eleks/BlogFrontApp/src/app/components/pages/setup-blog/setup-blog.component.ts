@@ -8,6 +8,7 @@ import {CustomValidators} from '../../../CustomValidators/CustomValidators';
 import {BlogBlogService} from '../../../services/BlogAPI/Blog/Models/blog.blog.service';
 import {SetupBlogRequest} from '../../../services/BlogAPI/Blog/Models/Request/SetupBlogRequest';
 import UserStore from '../../../stores/user.store';
+import {SaveSingleImageResponse} from '../../../services/Common/Models/SaveSingleImageResponse';
 
 @Component({
   selector: 'app-setup-blog',
@@ -20,13 +21,17 @@ export class SetupBlogComponent implements OnInit {
   Title = new FormControl('', [Validators.required]);
   SubTitle = new FormControl('', [Validators.required]);
   Visible = new FormControl('', [Validators.required]);
+  PreviewText = new FormControl('', [Validators.required, Validators.minLength(100), Validators.maxLength(150)]);
 
   SetupBlogForm = new FormGroup({
     blogUrl: this.BlogUrl,
     title: this.Title,
     subTitle: this.SubTitle,
-    visible: this.Visible
+    visible: this.Visible,
+    previewText: this.PreviewText
   });
+
+  public ImageName = 'no-image.jpg';
 
   constructor(public notificationStore: NotificationStore,
               public dialog: MatDialog,
@@ -36,7 +41,9 @@ export class SetupBlogComponent implements OnInit {
 
   async OnSubmit(): Promise<void> {
     if (this.SetupBlogForm.valid) {
-      const res = await this.blogBlogService.SetupBlog(this.SetupBlogForm.value as SetupBlogRequest);
+      const request = this.SetupBlogForm.value as SetupBlogRequest;
+      request.blogImage = this.ImageName;
+      const res = await this.blogBlogService.SetupBlog(request);
       if (res && 'errorMessages' in res) {
         this.SetupBlogForm.setErrors({
           responseErrorMessages: res.errorMessages
@@ -61,10 +68,14 @@ export class SetupBlogComponent implements OnInit {
     });
   }
 
+  OnFileUploaded($event: any): void {
+    const imageResponse = $event as SaveSingleImageResponse;
+    this.ImageName = imageResponse.fileName;
+  }
 
   async ngOnInit(): Promise<void> {
     await this.notificationStore.Init();
-    if (!this.notificationStore.IsUserSetuped){
+    if (!this.notificationStore.IsUserSetuped || !this.notificationStore.IsVerified){
       this.openDialog();
     }
   }

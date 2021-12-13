@@ -21,7 +21,11 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
             FluentApiModelCreating.BuildBlogModel(modelBuilder);
+            FluentApiModelCreating.BuildBlogSearchModel(modelBuilder);
+
             FluentApiModelCreating.BuildPostModel(modelBuilder);
+            FluentApiModelCreating.BuildPostSearchModel(modelBuilder);
+
             FluentApiModelCreating.BuildUserModel(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
@@ -29,7 +33,12 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
         
         }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogSearch> BlogSearches { get; set; }
+
         public DbSet<Post> Posts { get; set; }
+        public DbSet<PostSearch> PostSearches { get; set; }
+
         public DbSet<User> Users { get; set; }
+
     }
 }

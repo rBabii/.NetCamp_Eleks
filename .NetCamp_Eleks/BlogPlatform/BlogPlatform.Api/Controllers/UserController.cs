@@ -60,7 +60,8 @@ namespace BlogPlatform.Api.Controllers
                     LastName = result.User.LastName,
                     PhoneNumber = result.User.PhoneNumber,
                     BlogUrl = result.User.Blog == null ? "" : result.User.Blog.BlogUrl,
-                    ImageUrl = result.User.ImageUrl
+                    ImageUrl = result.User.ImageUrl,
+                    IsVerified = result.User.IsVerified
                 });
             }
 

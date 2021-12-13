@@ -45,12 +45,20 @@ namespace BlogPlatform.Application.Managers.BlogManager
                 return new SetupBlogResult(null, new Error("Your Account is not fully Setuped.", ErrorType.Validation));
             }
 
+            if (!blogUser.IsVerified)
+            {
+                return new SetupBlogResult(null, new Error("Your Account is not fully Verified. Please verify your email.", ErrorType.Validation));
+            }
+
+            if (string.IsNullOrEmpty(blogUser.FirstName) || string.IsNullOrEmpty(blogUser.LastName))
+            {
+                return new SetupBlogResult(null, new Error("Your Account is not fully Setuped.", ErrorType.Validation));
+            }
+
             if (blogUser.Blog != null)
             {
                 return new SetupBlogResult(null, new Error("Blog Page is allready setuped.", ErrorType.Validation));
             }
-
-
 
             var blog = _blogRepository.AddOrUpdate(new Blog()
             {
@@ -59,7 +67,9 @@ namespace BlogPlatform.Application.Managers.BlogManager
                 DateCreated = DateTime.UtcNow,
                 Title = setupBlogParams.Title,
                 SubTitle = setupBlogParams.SubTitle,
-                Visible = setupBlogParams.Visible
+                Visible = setupBlogParams.Visible,
+                PreviewText = setupBlogParams.PreviewText,
+                ImageName = setupBlogParams.BlogImage
             });
 
             return new SetupBlogResult(blog);
@@ -74,7 +84,7 @@ namespace BlogPlatform.Application.Managers.BlogManager
             }
 
             var blogUser = _userRepository.GetByAuthResourceUserId(deleteBlogParams.UserId);
-            if(blogUser == null)
+            if (blogUser == null)
             {
                 return new DeleteBlogResult(new Error("User is not fully setuped. Blog to delete Is not exist.", ErrorType.Validation));
             }
@@ -110,11 +120,34 @@ namespace BlogPlatform.Application.Managers.BlogManager
                 return new GetSingleBlogPageResult(null, validateErrorResult);
             }
             var blog = _blogRepository.GetByUrl(getSingleBlogPageParams.BlogUrl);
-            if(blog == null)
+            if (blog == null)
             {
                 return new GetSingleBlogPageResult(null, new Error("Blog Page Is not exist.", ErrorType.Validation));
             }
             return new GetSingleBlogPageResult(blog);
         }
+
+        public SearchBlogsResult SearchBlogs(SearchBlogsParams searchBlogsParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(searchBlogsParams);
+            if (validateErrorResult != null)
+            {
+                return new SearchBlogsResult(null, validateErrorResult);
+            }
+
+            var blogs = _blogRepository.SearchBlogs(searchBlogsParams.PageNumber,
+                searchBlogsParams.PageSize,
+                searchBlogsParams.BlogId,
+                searchBlogsParams.BlogUrl,
+                searchBlogsParams.SearchText,
+                searchBlogsParams.LoadRelatedEntities);
+            if (blogs == null || blogs.Count() < 1)
+            {
+                return new SearchBlogsResult(null, new Error("Blogs was not founded.", ErrorType.Validation));
+            }
+
+            return new SearchBlogsResult(blogs.ToList());
+        }
+
     }
 }

@@ -21,5 +21,7 @@ namespace BlogPlatform.Domain.AgregatesModel.BlogAgregate
         public string Title { get; set; }
         public string SubTitle { get; set; }
         public string ImageName { get; set; }
+        public string PreviewText { get; set; }
+        public BlogSearch BlogSearch { get; set; }
     }
 }

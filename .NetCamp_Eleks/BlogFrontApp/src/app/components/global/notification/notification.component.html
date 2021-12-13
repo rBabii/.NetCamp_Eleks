@@ -13,6 +13,11 @@
             <mat-icon>build</mat-icon>
           </a>
         </div>
+        <div *ngIf="notification.key == 'IsVerified'" style="padding-left: 20px;">
+          <a routerLink="/email-verify-help" mat-mini-fab color="primary">
+            <mat-icon>build</mat-icon>
+          </a>
+        </div>
       </div>
     </div>
   </mat-menu>

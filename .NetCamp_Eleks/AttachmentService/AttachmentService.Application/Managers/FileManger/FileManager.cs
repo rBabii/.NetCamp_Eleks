@@ -46,19 +46,21 @@ namespace AttachmentService.Application.Managers.FileManger
             var validationResult = ParamsValidator.Validate(saveSingleImageParams);
             if (validationResult != null)
             {
-                return new SaveSingleImageResult("", 0, validationResult);
+                return new SaveSingleImageResult("", 0, "", validationResult);
             }
 
             var file = saveSingleImageParams.Image;
 
             if (file.Length < 1)
             {
-                return new SaveSingleImageResult("", 0, new Error("file can not be empty.", ErrorType.Validation));
+                return new SaveSingleImageResult("", 0, "", new Error("file can not be empty.", ErrorType.Validation));
             }
 
             var fileName = SaveFile(file);
 
-            return new SaveSingleImageResult(fileName, saveSingleImageParams.Key);
+            var url = $"http://localhost:5003/files/{fileName}";
+
+            return new SaveSingleImageResult(fileName, saveSingleImageParams.Key, url);
         }
 
         public async Task<SaveUserImageResult> SaveUserImage(SaveUserImageParams saveUserImageParams)

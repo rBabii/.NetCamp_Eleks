@@ -48,28 +48,48 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
                 .ToList();
         }
 
+        public IEnumerable<Blog> SearchBlogs(
+                int pageNumber = 1,
+                int pageSize = 1,
+                int blogId = 0,
+                string blogUrl = "",
+                string searchText = "",
+                bool loadRelatedEntities = false
+            )
+        {
+            if (loadRelatedEntities)
+            {
+                return _dataContext.Blogs
+                        .FromSqlInterpolated($"SELECT * FROM [dbo].[GetBlogs] ({pageNumber}, {pageSize}, {blogId}, {blogUrl}, {searchText})")
+                        .Include(b => b.User)
+                        .AsNoTracking()
+                        .ToList();
+            }
+            return _dataContext.Blogs
+                    .FromSqlInterpolated($"SELECT * FROM [dbo].[GetBlogs] ({pageNumber}, {pageSize}, {blogId}, {blogUrl}, {searchText})")
+                    .AsNoTracking()
+                    .ToList();
+        }
+
         public Blog Get(int Id)
         {
             return _dataContext.Blogs
-                .Where(b => b.BlogId == Id)
-                .Include(b => b.Posts)
-                .Include(b => b.User).SingleOrDefault();
+                .Include(b => b.User)
+                .SingleOrDefault(b => b.BlogId == Id);
         }
 
         public Blog GetByUrl(string url)
         {
             return _dataContext.Blogs
-                .Where(b => b.BlogUrl == url)
-                .Include(b => b.Posts)
-                .Include(b => b.User).SingleOrDefault();
+                .Include(b => b.User)
+                .SingleOrDefault(b => b.BlogUrl == url);
         }
 
         public Blog GetByUserId(int userId)
         {
             return _dataContext.Blogs
-                .Where(b => b.UserId == userId)
-                .Include(b => b.Posts)
-                .Include(b => b.User).SingleOrDefault();
+                .Include(b => b.User)
+                .SingleOrDefault(b => b.UserId == userId);
         }
     }
 }

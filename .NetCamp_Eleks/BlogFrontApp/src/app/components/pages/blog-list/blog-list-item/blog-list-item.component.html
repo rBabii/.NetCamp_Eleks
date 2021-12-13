@@ -1,33 +1,51 @@
 <div *mobxAutorun>
   <div class="blog-card">
     <mat-card [routerLink]="['/blog', BlogItem.blogUrl]">
-      <mat-card-title>
-        {{BlogItem.title}}
-      </mat-card-title>
-      <mat-card-subtitle>
-        {{BlogItem.subTitle}}
-      </mat-card-subtitle>
-      <mat-card-content>
-        <div class="d-flex">
-          <div>
-            Created Date:
-          </div>
-          <div style="padding-left: 10px;">
-            {{BlogItem.dateCreated}}
-          </div>
+      <div class="d-flex">
+        <div class="blog-image" style="background-image: url('http://localhost:5003/files/{{BlogItem.blogImage}}')">
+
         </div>
-        <div class="d-flex">
-          <div>
-            Author:
-          </div>
-          <div style="padding-left: 10px;">
-            {{BlogItem.authorFirstName}} {{BlogItem.authorLastName}}
-          </div>
+        <div>
+          <mat-card-title>
+            {{BlogItem.title}}
+          </mat-card-title>
+          <mat-card-subtitle>
+            {{BlogItem.subTitle}}
+          </mat-card-subtitle>
+          <mat-card-content>
+            <div class="preview-text">
+              {{BlogItem.previewText}}
+            </div>
+
+            <div class="d-flex">
+              <div class="author-image w-25" style="background-image: url('http://localhost:5003/files/{{BlogItem.authorImage}}')">
+
+              </div>
+              <div class="w-75">
+                <div class="d-flex">
+                  <div>
+                    Created Date:
+                  </div>
+                  <div style="padding-left: 10px;">
+                    {{BlogItem.dateCreated}}
+                  </div>
+                </div>
+                <div class="d-flex">
+                  <div>
+                    Author:
+                  </div>
+                  <div style="padding-left: 10px;">
+                    {{BlogItem.authorFirstName}} {{BlogItem.authorLastName}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <a color="primary" [routerLink]="['/blog', BlogItem.blogUrl]" mat-raised-button>View</a>
+          </mat-card-actions>
         </div>
-      </mat-card-content>
-      <mat-card-actions>
-        <a color="primary" [routerLink]="['/blog', BlogItem.blogUrl]" mat-raised-button>View</a>
-      </mat-card-actions>
+      </div>
     </mat-card>
   </div>
 </div>

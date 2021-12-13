@@ -1,0 +1,28 @@
+:host ::ng-deep .header-content .ck-editor__editable_inline {
+  min-height: 200px;
+}
+
+:host ::ng-deep .main-content .ck-editor__editable_inline {
+  min-height: 400px;
+}
+
+:host ::ng-deep .footer-content .ck-editor__editable_inline {
+  min-height: 200px;
+}
+
+
+.main-content, .header-content, .footer-content {
+  margin-top: 20px;
+}
+
+.create-edit-post-container{
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.post-image {
+  height: 400px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+}

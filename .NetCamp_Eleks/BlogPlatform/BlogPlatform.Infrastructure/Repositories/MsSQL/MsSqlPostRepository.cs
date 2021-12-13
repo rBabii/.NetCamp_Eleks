@@ -42,17 +42,56 @@ namespace BlogPlatform.Infrastructure.Repositories.MsSQL
 
         public IEnumerable<Post> Get()
         {
-            return _dataContext.Posts.ToList();
+            return _dataContext.Posts
+                .ToList();
+        }
+
+        public IEnumerable<Post> SearchPosts(
+            int pageNumber = 1, 
+            int pageSize = 1, 
+            string blogUrl = "", 
+            string searchText = "", 
+            bool loadRelatedEntities = false
+            )
+        {
+            if (loadRelatedEntities)
+            {
+                return _dataContext
+                    .Posts
+                    .FromSqlInterpolated($"SELECT * FROM [dbo].[GetPosts]({pageNumber}, {pageSize}, {blogUrl}, {searchText})")
+                    .Include(p => p.Blog)
+                    .Include(p => p.Blog.User)
+                    .AsNoTracking()
+                    .ToList();
+            }
+            return _dataContext
+                    .Posts
+                    .FromSqlInterpolated($"SELECT * FROM [dbo].[GetPosts]({pageNumber}, {pageSize}, {blogUrl}, {searchText})")
+                    .AsNoTracking()
+                    .ToList();
+
         }
 
         public Post Get(int Id)
         {
-            return _dataContext.Posts.SingleOrDefault(p => p.PostId == Id);
+            return _dataContext.Posts
+                .Include(p => p.Blog)
+                .Include(p => p.Blog.User)
+                .SingleOrDefault(p => p.PostId == Id);
         }
 
         public IEnumerable<Post> GetByBlogId(int blogId)
         {
-            return _dataContext.Posts.Where(p => p.BlogId == blogId);
+            return _dataContext.Posts
+                .Where(p => p.BlogId == blogId);
+        }
+
+        public IEnumerable<Post> GetByBlogUrl(string blogUrl)
+        {
+            return _dataContext.Posts
+                .Include(p => p.Blog)
+                .Include(p => p.Blog.User)
+                .Where(p => p.Blog.BlogUrl == blogUrl);
         }
     }
 }

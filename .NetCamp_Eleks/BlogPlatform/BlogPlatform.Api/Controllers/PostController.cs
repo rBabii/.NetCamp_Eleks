@@ -46,7 +46,9 @@ namespace BlogPlatform.Api.Controllers
                         SubTitle = createPostRequest.SubTitle,
                         HeaderContent = createPostRequest.HeaderContent,
                         MainContent = createPostRequest.MainContent,
-                        FooterContent = createPostRequest.FooterContent
+                        FooterContent = createPostRequest.FooterContent,
+                        PreviewText = createPostRequest.PreviewText,
+                        PostImageName = createPostRequest.PostImageName
                     });
                     if (!result.IsValid && !result.CanContinue)
                     {
@@ -114,6 +116,112 @@ namespace BlogPlatform.Api.Controllers
             {
                 return StatusCode(500, "Delete Blog failed.");
             }
+        }
+
+
+        [Route("api/[controller]/GetPostList")]
+        [HttpPost]
+        public IActionResult GetPostList(GetPostListRequest getPostListRequest)
+        {
+            var result = _postManager.GetPostList(new GetPostListParams() 
+            {
+                BlogUrl = getPostListRequest.BlogUrl
+            });
+
+            if (!result.IsValid && !result.CanContinue)
+            {   
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new GetPostListResponse() 
+            {
+                Posts = result.Posts.Select(p => new External.DTOs.BlogPlatform.Models.Response.Childs.GetPostListItem 
+                {
+                    PostId = p.PostId,
+                    AuthorFirstName = p.Blog.User.FirstName,
+                    AuthorImage = p.Blog.User.ImageName,
+                    AuthorLastName = p.Blog.User.LastName,
+                    DatePosted = p.DatePosted,
+                    PostMainImage = p.ImageName,
+                    PreviewText = p.PreviewText,
+                    SubTitle = p.Title,
+                    Title = p.Title
+                }).ToList()
+            });
+        }
+
+        [Route("api/[controller]/GetSinglePost")]
+        [HttpPost]
+        public IActionResult GetSinglePost(GetSinglePostRequest getSinglePostRequest)
+        {
+            var result = _postManager.GetSinglePost(new GetSinglePostParams() 
+            {
+                PostId = getSinglePostRequest.PostId
+            });
+
+            if (!result.IsValid && !result.CanContinue)
+            {
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new GetSinglePostResponse() 
+            {
+                AuthorFirstName = result.Post.Blog.User.FirstName,
+                DatePosted = result.Post.DatePosted,
+                AuthorImage = result.Post.Blog.User.ImageName,
+                AuthorLastName = result.Post.Blog.User.LastName,
+                PostFooter = result.Post.FooterContent,
+                PostHeader = result.Post.HeaderContent,
+                PostMainContent = result.Post.MainContent,
+                PostMainImage = result.Post.ImageName,
+                SubTitle = result.Post.SubTitle,
+                Title = result.Post.Title,
+                BlogUrl = result.Post.Blog.BlogUrl
+            });
+        }
+
+        [Route("api/[controller]/SearchPosts")]
+        [HttpPost]
+        public IActionResult SearchPosts(SearchPostsRequest searchPostsRequest)
+        {
+            var result = _postManager.SearchPosts(new SearchPostsParams()
+            {
+                BlogUrl = searchPostsRequest.BlogUrl,
+                SearchText = searchPostsRequest.SearchText,
+                LoadRelatedEntities = true,
+                PageNumber = searchPostsRequest.PageNumber,
+                PageSize = searchPostsRequest.PageSize
+            });
+
+            if (!result.IsValid && !result.CanContinue)
+            {
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new SearchPostsResponse()
+            {
+                SearchPostItems = result.Posts.Select(p => new External.DTOs.BlogPlatform.Models.Response.Childs.SearchPostItem
+                {
+                    PostId = p.PostId,
+                    AuthorFirstName = p.Blog.User.FirstName,
+                    AuthorImage = p.Blog.User.ImageName,
+                    AuthorLastName = p.Blog.User.LastName,
+                    DatePosted = p.DatePosted,
+                    PostMainImage = p.ImageName,
+                    PreviewText = p.PreviewText,
+                    SubTitle = p.Title,
+                    Title = p.Title
+                }).ToList()
+            });
         }
     }
 }

@@ -113,6 +113,7 @@ section {
   font-size:0.95rem;
   line-height:1.4;
   font-weight:400;
+  word-break: break-all;
 }
 .listfeaturedtag .wrapfooter {
   position:absolute;

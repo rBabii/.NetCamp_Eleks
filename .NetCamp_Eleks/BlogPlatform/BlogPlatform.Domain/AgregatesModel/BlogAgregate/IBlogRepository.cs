@@ -14,5 +14,6 @@ namespace BlogPlatform.Domain.AgregatesModel.BlogAgregate
         Blog GetByUrl(string url);
         bool Delete(Blog blog);
         Blog AddOrUpdate(Blog blog);
+        IEnumerable<Blog> SearchBlogs(int pageNumber = 1, int pageSize = 1, int blogId = 0, string blogUrl = "", string searchText = "", bool loadRelatedEntities = false);
     }
 }

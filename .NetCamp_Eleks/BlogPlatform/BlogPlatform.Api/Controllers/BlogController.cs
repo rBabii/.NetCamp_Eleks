@@ -41,22 +41,14 @@ namespace BlogPlatform.Api.Controllers
             }
             return Ok(new GetSingleBlogPageResponse()
             {
-                Posts = result.Blog.Posts == null ? null : result.Blog.Posts
-                .Select(p => new External.DTOs.BlogPlatform.Models.Response.Childs.GetSingleBlogPagePostItem() 
-                {
-                    DatePosted = p.DatePosted,
-                    SubTitle = p.SubTitle,
-                    FooterContent = p.FooterContent,
-                    DateCreated = p.DateCreated,
-                    HeaderContent = p.HeaderContent,
-                    MainContent= p.MainContent,
-                    Title = p.Title
-                }).ToList(),
                 SubTitle = result.Blog.SubTitle,
                 Title = result.Blog.Title,
                 DateCreated = result.Blog.DateCreated,
                 AuthorFirstName = result.Blog.User.FirstName,
-                AuthorLastName = result.Blog.User.LastName
+                AuthorLastName = result.Blog.User.LastName,
+                PreviewText = result.Blog.PreviewText,
+                BlogMainImageUrl = result.Blog.ImageName,
+                UserImage = result.Blog.User.ImageName
             });
         }
 
@@ -84,7 +76,10 @@ namespace BlogPlatform.Api.Controllers
                     Title = b.Title,
                     SubTitle = b.SubTitle,
                     AuthorFirstName = b.User.FirstName,
-                    AuthorLastName = b.User.LastName
+                    AuthorLastName = b.User.LastName,
+                    BlogImage = b.ImageName,
+                    PreviewText = b.PreviewText,
+                    AuthorImage = b.User.ImageName
                 }).ToList() : null,
                 Error = result.Error != null ? new External.DTOs.Common.Models.Error()
                 {
@@ -114,7 +109,9 @@ namespace BlogPlatform.Api.Controllers
                         BlogUrl = setupBlogRequest.BlogUrl,
                         Title = setupBlogRequest.Title,
                         SubTitle = setupBlogRequest.SubTitle,
-                        Visible = setupBlogRequest.Visible
+                        Visible = setupBlogRequest.Visible,
+                        PreviewText = setupBlogRequest.PreviewText,
+                        BlogImage = setupBlogRequest.BlogImage
                     });
                     if (!result.IsValid && !result.CanContinue)
                     {
@@ -178,5 +175,47 @@ namespace BlogPlatform.Api.Controllers
                 return StatusCode(500, "Delete Blog failed.");
             }
         }
+
+        [Route("api/[controller]/SearchBlogs")]
+        [HttpPost]
+        public IActionResult SearchBlogs(SearchBlogsRequest searchBlogsRequest)
+        {
+            var result = _blogManager.SearchBlogs(new SearchBlogsParams() 
+            {
+                BlogId = searchBlogsRequest.BlogId,
+                BlogUrl = searchBlogsRequest.BlogUrl,
+                SearchText = searchBlogsRequest.SearchText,
+                LoadRelatedEntities = true,
+                PageNumber = searchBlogsRequest.PageNumber,
+                PageSize = searchBlogsRequest.PageSize
+            });
+            if (!result.IsValid && !result.CanContinue)
+            {
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new SearchBlogsResponse()
+            {
+                SearchBlogItems = result.Blogs != null && result.Blogs.Count > 0 ?
+                result.Blogs
+                .Select(b => new External.DTOs.BlogPlatform.Models.Response.Childs.SearchBlogItem()
+                {
+                    BlogId = b.BlogId,
+                    DateCreated = b.DateCreated,
+                    BlogUrl = b.BlogUrl,
+                    Title = b.Title,
+                    SubTitle = b.SubTitle,
+                    AuthorFirstName = b.User.FirstName,
+                    AuthorLastName = b.User.LastName,
+                    BlogImage = b.ImageName,
+                    PreviewText = b.PreviewText,
+                    AuthorImage = b.User.ImageName
+                }).ToList() : null
+            });
+        }
+
     }
 }

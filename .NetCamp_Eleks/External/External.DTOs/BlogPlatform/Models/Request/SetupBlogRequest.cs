@@ -12,5 +12,7 @@ namespace External.DTOs.BlogPlatform.Models.Request
         public string SubTitle { get; set; }
         public bool Visible { get; set; }
         public string BlogUrl { get; set; }
+        public string PreviewText { get; set; }
+        public string BlogImage { get; set; }
     }
 }

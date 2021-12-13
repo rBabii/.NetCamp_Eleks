@@ -33,5 +33,13 @@ namespace BlogPlatform.Application.Managers.PostManager.Params
 
         [Required(ErrorMessage = "FooterContent is Required.")]
         public string FooterContent { get; set; }
+
+        [Required(ErrorMessage = "Preview Text is Required.")]
+        [MinLength(100, ErrorMessage = "Preview Text must have at least 100 characters.")]
+        [MaxLength(150, ErrorMessage = "Preview Text can include maximum 150 characters.")]
+        public string PreviewText { get; set; }
+
+        [Required(ErrorMessage = "Image is Required.")]
+        public string PostImageName { get; set; }
     }
 }

@@ -9,5 +9,6 @@ namespace External.Options.BlogPlatform
     public class FrontAppOptions
     {
         public string VerifyUserUrl { get; set; }
+        public string ResetPasswordUrl { get; set; }
     }
 }

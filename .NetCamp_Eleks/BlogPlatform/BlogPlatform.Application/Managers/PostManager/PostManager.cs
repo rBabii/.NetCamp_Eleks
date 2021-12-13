@@ -2,6 +2,7 @@
 using BlogPlatform.Application.Managers.PostManager.Result;
 using BlogPlatform.Domain.AgregatesModel.BlogAgregate;
 using BlogPlatform.Domain.AgregatesModel.PostAgregate;
+using BlogPlatform.Domain.AgregatesModel.UserAgregate;
 using External.Result.Base;
 using External.Result.Helpers;
 using System;
@@ -16,10 +17,12 @@ namespace BlogPlatform.Application.Managers.PostManager
     {
         private readonly IBlogRepository _blogRepository;
         private readonly IPostRepository _postRepository;
-        public PostManager(IBlogRepository blogRepository, IPostRepository postRepository)
+        private readonly IUserRepository _userRepository;
+        public PostManager(IBlogRepository blogRepository, IPostRepository postRepository, IUserRepository userRepository)
         {
             _blogRepository = blogRepository;
             _postRepository = postRepository;
+            _userRepository = userRepository;
         }
 
         public CreatePostResult CreatePost(CreatePostParams createPostParams)
@@ -29,14 +32,19 @@ namespace BlogPlatform.Application.Managers.PostManager
             {
                 return new CreatePostResult(null, validateErrorResult);
             }
-            var blog = _blogRepository.GetByUserId(createPostParams.UserId);
-            if(blog == null)
+
+            var blogUser = _userRepository.GetByAuthResourceUserId(createPostParams.UserId);
+            if(blogUser == null)
+            {
+                return new CreatePostResult(null, new Error("User is not Setuped. Need to setup User before post creating.", ErrorType.Validation));
+            }
+            if(blogUser.Blog == null)
             {
                 return new CreatePostResult(null, new Error("Blog is not Setuped. Need to setup blog before post creating.", ErrorType.Validation));
             }
             var post = _postRepository.AddOrUpdate(new Post() 
             {
-                BlogId = blog.BlogId,
+                BlogId = blogUser.Blog.BlogId,
                 DateCreated = DateTime.UtcNow,
                 DatePosted = createPostParams.DatePosted < DateTime.UtcNow ? DateTime.UtcNow : createPostParams.DatePosted,
                 Visible = createPostParams.Visible,
@@ -44,7 +52,9 @@ namespace BlogPlatform.Application.Managers.PostManager
                 SubTitle = createPostParams.SubTitle,
                 HeaderContent = createPostParams.HeaderContent,
                 MainContent = createPostParams.MainContent,
-                FooterContent = createPostParams.FooterContent
+                FooterContent = createPostParams.FooterContent,
+                PreviewText = createPostParams.PreviewText,
+                ImageName = createPostParams.PostImageName
             });
             return new CreatePostResult(post);
         }
@@ -79,6 +89,51 @@ namespace BlogPlatform.Application.Managers.PostManager
                 return new DeletePostResult(new Error("Post Delete Failed", ErrorType.SystemError));
             }
             return new DeletePostResult();
+        }
+
+        public GetPostListResult GetPostList(GetPostListParams getPostListParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(getPostListParams);
+            if (validateErrorResult != null)
+            {
+                return new GetPostListResult(null, validateErrorResult);
+            }
+
+            var posts = _postRepository.GetByBlogUrl(getPostListParams.BlogUrl);
+            return new GetPostListResult(posts);
+        }
+
+        public GetSinglePostResult GetSinglePost(GetSinglePostParams getSinglePostParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(getSinglePostParams);
+            if (validateErrorResult != null)
+            {
+                return new GetSinglePostResult(null, validateErrorResult);
+            }
+
+            var post = _postRepository.Get(getSinglePostParams.PostId);
+            if(post == null)
+            {
+                return new GetSinglePostResult(null, new Error("Post not founded.", ErrorType.Validation));
+            }
+            return new GetSinglePostResult(post);
+        }
+
+        public SearchPostsResult SearchPosts(SearchPostsParams searchPostsParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(searchPostsParams);
+            if (validateErrorResult != null)
+            {
+                return new SearchPostsResult(null, validateErrorResult);
+            }
+
+            var posts = _postRepository.SearchPosts(searchPostsParams.PageNumber, searchPostsParams.PageSize, searchPostsParams.BlogUrl, searchPostsParams.SearchText, searchPostsParams.LoadRelatedEntities);
+            if(posts == null || posts.Count() < 1)
+            {
+                return new SearchPostsResult(null, new Error("Posts Is not founded.", ErrorType.Validation));
+            }
+            
+            return new SearchPostsResult(posts.ToList());
         }
     }
 }

@@ -15,5 +15,7 @@ namespace External.DTOs.BlogPlatform.Models.Request
         public string HeaderContent { get; set; }
         public string MainContent { get; set; }
         public string FooterContent { get; set; }
+        public string PreviewText { get; set; }
+        public string PostImageName { get; set; }
     }
 }

@@ -1,30 +1,42 @@
 <div *mobxAutorun>
-  <div class="blog-card">
-    <mat-card>
-      <mat-card-title>
-        {{singleBlogPageStore.BlogPage?.title}}
-      </mat-card-title>
-      <mat-card-subtitle>
-        {{singleBlogPageStore.BlogPage?.subTitle}}
-      </mat-card-subtitle>
-      <mat-card-content>
-        <div class="d-flex">
-          <div>
-            Created Date:
+  <div class="blog-page">
+    <div class="blog-card">
+      <mat-card>
+        <mat-card-title class="text-center">
+          {{singleBlogPageStore.BlogPage?.title}}
+        </mat-card-title>
+        <mat-card-subtitle class="text-right">
+          {{singleBlogPageStore.BlogPage?.subTitle}}
+        </mat-card-subtitle>
+        <mat-card-content>
+          <div class="d-flex">
+            <div>
+              Created Date:
+            </div>
+            <div style="padding-left: 10px;">
+              {{singleBlogPageStore.BlogPage?.dateCreated}}
+            </div>
           </div>
-          <div style="padding-left: 10px;">
-            {{singleBlogPageStore.BlogPage?.dateCreated}}
+          <div class="d-flex">
+            <div>
+              Author:
+            </div>
+            <div style="padding-left: 10px;">
+              {{singleBlogPageStore.BlogPage?.authorFirstName}} {{singleBlogPageStore.BlogPage?.authorLastName}}
+            </div>
           </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="margtop3rem">
+      <section class="recent-posts">
+        <div class="section-title">
+          <h2><span>All Stories</span></h2>
         </div>
-        <div class="d-flex">
-          <div>
-            Author:
-          </div>
-          <div style="padding-left: 10px;">
-            {{singleBlogPageStore.BlogPage?.authorFirstName}} {{singleBlogPageStore.BlogPage?.authorLastName}}
-          </div>
+        <div class="card-columns listrecent">
+          <app-story-post *ngFor="let postData of StoryPostData" [data]="postData"></app-story-post>
         </div>
-      </mat-card-content>
-    </mat-card>
+      </section>
+    </div>
   </div>
 </div>

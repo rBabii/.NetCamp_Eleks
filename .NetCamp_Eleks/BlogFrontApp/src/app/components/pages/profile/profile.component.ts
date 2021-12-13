@@ -72,11 +72,6 @@ export class ProfileComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.notificationStore.Init();
-    if (this.notificationStore.IsUserSetuped){
-      await this.userStore.Init();
-    }else {
-      this.userStore.SetDefault();
-    }
     if (this.userStore.User){
       this.FirstName.setValue(this.userStore.User.firstName);
       this.LastName.setValue(this.userStore.User.lastName);

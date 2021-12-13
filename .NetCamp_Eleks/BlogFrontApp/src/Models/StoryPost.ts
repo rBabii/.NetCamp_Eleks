@@ -6,4 +6,5 @@ export interface StoryPost {
   AuthorName: string;
   PostedDate: string;
   ReadTimeSec: string;
+  postId: number;
 }

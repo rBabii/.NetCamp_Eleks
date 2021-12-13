@@ -214,6 +214,24 @@ namespace Auth.Application.UserManager
             return new GenerateEmailVerificationTokenResult(token);
         }
 
+
+        public GetEmailVerificationTokenResult GetEmailVerificationToken(GetEmailVerificationTokenParams getEmailVerificationTokenParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(getEmailVerificationTokenParams);
+            if (validateErrorResult != null)
+            {
+                return new GetEmailVerificationTokenResult("", validateErrorResult);
+            }
+            var user = _userRepository.GetByEmail(getEmailVerificationTokenParams.UserEmail);
+            if(user == null)
+            {
+                return new GetEmailVerificationTokenResult("", new Error("User Not Founded", ErrorType.Exception));
+            }
+
+            var token = _emailVerifyTokenHelper.GenerateJWT(user);
+            return new GetEmailVerificationTokenResult(token);
+        }
+
         public ResetPasswordResult ResetPassword(ResetPasswordParams resetPasswordParams)
         {
             var validateErrorResult = ParamsValidator.Validate(resetPasswordParams);
@@ -229,7 +247,7 @@ namespace Auth.Application.UserManager
             }
 
             var UserIdClaim = result.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
-            if(UserIdClaim == null)
+            if (UserIdClaim == null)
             {
                 return new ResetPasswordResult(new Error("Invalid token", ErrorType.Validation));
             }
@@ -240,6 +258,12 @@ namespace Auth.Application.UserManager
                 {
                     return new ResetPasswordResult(new Error("User does not exist or deleted.", ErrorType.Validation));
                 }
+                if (user.Email != resetPasswordParams.Email)
+                {
+                    return new ResetPasswordResult(new Error("You Entered wrong Email address. Enter your account email address.", ErrorType.Validation));
+                }
+
+                user.RefreshToken = null;
                 user.Password = _passwordHasher.Hash(resetPasswordParams.Password);
                 _userRepository.AddOrUpdate(user);
                 return new ResetPasswordResult();
@@ -252,35 +276,35 @@ namespace Auth.Application.UserManager
             var validateErrorResult = ParamsValidator.Validate(verifyEmailParams);
             if (validateErrorResult != null)
             {
-                return new VerifyEmailResult(validateErrorResult);
+                return new VerifyEmailResult("", validateErrorResult);
             }
 
             var result = _emailVerifyTokenHelper.Validate(verifyEmailParams.Token);
             if(result == null)
             {
-                return new VerifyEmailResult(new Error("Invalid token.", ErrorType.Validation));
+                return new VerifyEmailResult("", new Error("Invalid token.", ErrorType.Validation));
             }
             var UserIdClaim = result.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Sub);
             if (UserIdClaim == null)
             {
-                return new VerifyEmailResult(new Error("Invalid token.", ErrorType.Validation));
+                return new VerifyEmailResult("", new Error("Invalid token.", ErrorType.Validation));
             }
             if (Int32.TryParse(UserIdClaim.Value, out int userId) && userId != 0)
             {
                 var user = _userRepository.Get(userId);
                 if(user == null)
                 {
-                    return new VerifyEmailResult(new Error("User does not exist or deleted.", ErrorType.Validation));
+                    return new VerifyEmailResult("", new Error("User does not exist or deleted.", ErrorType.Validation));
                 }
                 if (user.IsVerified)
                 {
-                    return new VerifyEmailResult(new Error("User allready Verified.", ErrorType.Validation));
+                    return new VerifyEmailResult("", new Error("User allready Verified.", ErrorType.Validation));
                 }
                  user.IsVerified = true;
                  _userRepository.AddOrUpdate(user);
-                return new VerifyEmailResult();
+                return new VerifyEmailResult(user.Email);
             }
-            return new VerifyEmailResult(new Error("Invalid token.", ErrorType.Validation));
+            return new VerifyEmailResult("", new Error("Invalid token.", ErrorType.Validation));
         }
 
         public IsValidResult IsValid(IsValidParams isValidParams)

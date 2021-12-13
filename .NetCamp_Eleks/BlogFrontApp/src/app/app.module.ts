@@ -16,7 +16,7 @@ import { RegisterComponent } from './components/global/register/register.compone
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './modules/material-module.module';
 import { MobxAngularModule } from 'mobx-angular';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {JwtConfigModule} from './modules/jwt-config.module';
 import {httpInterceptorProviders} from './http-interceptors/interceptors.provider';
@@ -30,6 +30,13 @@ import { BlogListComponent } from './components/pages/blog-list/blog-list.compon
 import { BlogListItemComponent } from './components/pages/blog-list/blog-list-item/blog-list-item.component';
 import { SingleBlogPageComponent } from './components/pages/single-blog-page/single-blog-page.component';
 import { FileUploadComponent } from './components/global/file-uplaod/file-upload.component';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { CreatePostComponent } from './components/global/create-post/create-post.component';
+import { ForgotPasswordComponent } from './components/global/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/pages/reset-password/reset-password.component';
+import { EmailVerifyHelpComponent } from './components/global/email-verify-help/email-verify-help.component';
+import { SinglePostViewComponent } from './components/global/single-post-view/single-post-view.component';
+import { SinglePostPageComponent } from './components/pages/single-post-page/single-post-page.component';
 
 @NgModule({
   declarations: [
@@ -53,18 +60,26 @@ import { FileUploadComponent } from './components/global/file-uplaod/file-upload
     BlogListComponent,
     BlogListItemComponent,
     SingleBlogPageComponent,
-    FileUploadComponent
+    FileUploadComponent,
+    CreatePostComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent,
+    EmailVerifyHelpComponent,
+    SinglePostViewComponent,
+    SinglePostPageComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    JwtConfigModule,
-    MaterialModule,
-    MobxAngularModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        JwtConfigModule,
+        MaterialModule,
+        MobxAngularModule,
+        ReactiveFormsModule,
+        CKEditorModule,
+        FormsModule
+    ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
 })

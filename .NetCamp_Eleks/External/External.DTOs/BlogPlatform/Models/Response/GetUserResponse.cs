@@ -24,5 +24,7 @@ namespace External.DTOs.BlogPlatform.Models.Response
         public string BlogUrl { get; set; }
         
         public string ImageUrl { get; set; }
+
+        public bool IsVerified { get; set; }
     }
 }

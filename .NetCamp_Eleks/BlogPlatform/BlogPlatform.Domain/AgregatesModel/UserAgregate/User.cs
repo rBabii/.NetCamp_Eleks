@@ -21,5 +21,6 @@ namespace BlogPlatform.Domain.AgregatesModel.UserAgregate
         public DateTime BirthDate { get; set; }
         public string PhoneNumber { get; set; }
         public string ImageName { get; set; }
+        public bool IsVerified { get; set; }
     }
 }

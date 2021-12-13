@@ -1,9 +1,22 @@
 .blog-card{
-  max-width: 700px;
   margin: 25px auto;
   cursor: pointer;
   transition: 0.3s;
 }
 .blog-card:hover {
   transform: scale(1.1);
+}
+.blog-image {
+  height: auto;
+  width: 100px;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-right: 40px;
+}
+.preview-text {
+  max-width: 300px;
+  word-break: break-all;
+  margin: 20px 0;
+  height: 100px;
 }

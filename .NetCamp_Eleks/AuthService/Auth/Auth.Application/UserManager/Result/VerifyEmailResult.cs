@@ -10,10 +10,11 @@ namespace Auth.Application.UserManager.Result
 {
     public class VerifyEmailResult : BaseResult
     {
-        public VerifyEmailResult(Error error = null)
+        public string Email { get; set; }
+        public VerifyEmailResult(string email, Error error = null)
             :base(error)
         {
-
+            Email = email;
         }
     }
 }

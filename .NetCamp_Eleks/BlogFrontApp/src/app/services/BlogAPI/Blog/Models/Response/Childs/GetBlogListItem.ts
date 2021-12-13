@@ -5,4 +5,7 @@ export interface GetBlogListItem {
   subTitle: string;
   authorFirstName: string;
   authorLastName: string;
+  blogImage: string;
+  previewText: string;
+  authorImage: string;
 }

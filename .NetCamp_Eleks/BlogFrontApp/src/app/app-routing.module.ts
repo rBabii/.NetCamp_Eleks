@@ -14,6 +14,11 @@ import {SetupBlogComponent} from './components/pages/setup-blog/setup-blog.compo
 import {SetupedBlogGuard} from './guards/setuped-blog.guard';
 import {BlogListComponent} from './components/pages/blog-list/blog-list.component';
 import {SingleBlogPageComponent} from './components/pages/single-blog-page/single-blog-page.component';
+import {CreatePostComponent} from './components/global/create-post/create-post.component';
+import {ResetPasswordComponent} from './components/pages/reset-password/reset-password.component';
+import {EmailVerifyHelpComponent} from './components/global/email-verify-help/email-verify-help.component';
+import {VerifiedUserGuard} from './guards/verified-user.guard';
+import {SinglePostPageComponent} from './components/pages/single-post-page/single-post-page.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent},
@@ -23,9 +28,13 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [LoginRegisterGuardGuard]},
   { path: 'verify', component: VerifyComponent},
   { path: 'blog', component: BlogListComponent},
+  { path: 'post/create', component: CreatePostComponent},
   { path: 'blog/:blogUrl', component: SingleBlogPageComponent},
+  { path: 'post/:postId', component: SinglePostPageComponent},
   { path: 'profile', component: ProfileComponent, canActivate: [UnAuthorizedUserGuard]},
   { path: 'setup-blog', component: SetupBlogComponent, canActivate: [UnAuthorizedUserGuard, SetupedBlogGuard]},
+  { path: 'reset-password', component: ResetPasswordComponent, canActivate: [LoginRegisterGuardGuard]},
+  { path: 'email-verify-help', component: EmailVerifyHelpComponent, canActivate: [UnAuthorizedUserGuard, VerifiedUserGuard]},
   { path: '**', component: NotFoundComponent},
 ];
 

@@ -57,7 +57,8 @@ export class HomeComponent implements OnInit {
         AuthorThumbnail: 'https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x',
         AuthorName: 'Sal',
         PostedDate: '22 July 2017',
-        ReadTimeSec: '6 min read'
+        ReadTimeSec: '6 min read',
+        postId: 1
       },
       {
         StoryPostThumbnail: 'assets/img/demopic/6.jpg',
@@ -66,7 +67,8 @@ export class HomeComponent implements OnInit {
         AuthorThumbnail: 'https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x',
         AuthorName: 'Sal',
         PostedDate: '22 July 2017',
-        ReadTimeSec: '6 min read'
+        ReadTimeSec: '6 min read',
+        postId: 1
       },
       {
         StoryPostThumbnail: 'assets/img/demopic/7.jpg',
@@ -75,7 +77,8 @@ export class HomeComponent implements OnInit {
         AuthorThumbnail: 'https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x',
         AuthorName: 'Sal',
         PostedDate: '22 July 2017',
-        ReadTimeSec: '6 min read'
+        ReadTimeSec: '6 min read',
+        postId: 1
       },
       {
         StoryPostThumbnail: 'assets/img/demopic/8.jpg',
@@ -84,7 +87,8 @@ export class HomeComponent implements OnInit {
         AuthorThumbnail: 'https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x',
         AuthorName: 'Sal',
         PostedDate: '22 July 2017',
-        ReadTimeSec: '6 min read'
+        ReadTimeSec: '6 min read',
+        postId: 1
       },
       {
         StoryPostThumbnail: 'assets/img/demopic/9.jpg',
@@ -93,7 +97,8 @@ export class HomeComponent implements OnInit {
         AuthorThumbnail: 'https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x',
         AuthorName: 'Sal',
         PostedDate: '22 July 2017',
-        ReadTimeSec: '6 min read'
+        ReadTimeSec: '6 min read',
+        postId: 1
       },
       {
         StoryPostThumbnail: 'assets/img/demopic/10.jpg',
@@ -102,7 +107,8 @@ export class HomeComponent implements OnInit {
         AuthorThumbnail: 'https://www.gravatar.com/avatar/e56154546cf4be74e393c62d1ae9f9d4?s=250&amp;d=mm&amp;r=x',
         AuthorName: 'Sal',
         PostedDate: '22 July 2017',
-        ReadTimeSec: '6 min read'
+        ReadTimeSec: '6 min read',
+        postId: 1
       },
     ];
   }

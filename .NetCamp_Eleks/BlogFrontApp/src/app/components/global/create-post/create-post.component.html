@@ -1,0 +1,64 @@
+<div *mobxAutorun class="create-edit-post-container">
+
+  <mat-form-field class="w-100" appearance="fill">
+    <mat-label>Title</mat-label>
+    <input [(ngModel)]="Title" matInput placeholder="Title">
+  </mat-form-field>
+
+  <mat-form-field class="w-100" appearance="fill">
+    <mat-label>Sub Title</mat-label>
+    <input [(ngModel)]="Subtitle" matInput placeholder="Sub Title">
+  </mat-form-field>
+
+
+  <mat-form-field class="w-100" appearance="fill">
+    <mat-label>Preview Text</mat-label>
+    <textarea style="min-height: 200px;" [(ngModel)]="PreviewText" matInput placeholder="Preview Text">
+    </textarea>
+  </mat-form-field>
+
+  <mat-form-field class="w-100" appearance="fill">
+    <mat-label>Visibility</mat-label>
+    <mat-select [(ngModel)]="Visible">
+      <mat-option [value]="true">
+        Visible
+      </mat-option>
+      <mat-option [value]="false">
+        Hidden
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field class="w-100" appearance="fill">
+    <mat-label>Posted Date</mat-label>
+    <input [(ngModel)]="DatePosted" matInput [matDatepicker]="picker">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <app-file-uplaod (onUploadFinished)="OnFileUploaded($event)"></app-file-uplaod>
+  <div class="w-100 post-image" style="background-image: url('http://localhost:5003/files/{{ImageName}}')">
+
+  </div>
+
+  <div class="header-content">
+    <h5>Header</h5>
+    <ckeditor [(ngModel)]="HeaderContent" [editor]="Editor" [config]="EditorConfig"></ckeditor>
+  </div>
+
+  <div class="main-content">
+    <h5>Main</h5>
+    <ckeditor [(ngModel)]="MainContent" [editor]="Editor" [config]="EditorConfig"></ckeditor>
+  </div>
+
+  <div class="footer-content">
+    <h5>Footer</h5>
+    <ckeditor [(ngModel)]="FooterContent" [editor]="Editor" [config]="EditorConfig"></ckeditor>
+  </div>
+
+  <div>
+    <div class="margtop3rem">
+      <button type="submit" (click)="Post()" mat-raised-button color="primary">POST!</button>
+    </div>
+  </div>
+</div>

@@ -59,7 +59,8 @@ namespace BlogPlatform.Application.Managers.AuthManager
             _userRepository.AddOrUpdate(new User()
             {
                 AuthResourceUserId = result.ResponseObject.Id,
-                Email = result.ResponseObject.Email
+                Email = result.ResponseObject.Email,
+                BirthDate = DateTime.UtcNow
             });
 
             var emailResult = await _emailManager.Send(new EmailManager.Params.SendEmailParams() 
@@ -84,9 +85,56 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 Body = string.Format("<a href='{0}'>Verify Email</a>", _frontAppOptions.Value.VerifyUserUrl + "?token=" + result.ResponseObject.EmailVerifyToken)
             });
 
-            //SEND EMAIL WITH VERIFY LINK (url?token={resetPasswordToken})
-
             return new RegisterResult();
+        }
+
+
+        public async Task<SendEmailVerificationTokenResult> SendEmailVerificationToken(SendEmailVerificationTokenParams sendEmailVerificationTokenParams)
+        {
+            var validateErrorResult = ParamsValidator.Validate(sendEmailVerificationTokenParams);
+            if (validateErrorResult != null)
+            {
+                return new SendEmailVerificationTokenResult(validateErrorResult);
+            }
+
+            var result = await _authService.GetEmailVerificationToken(new GetEmailVerificationTokenRequest() 
+            {
+                Email = sendEmailVerificationTokenParams.Email
+            });
+
+            if (!result.IsSuccess && result.Error.ErrorType != External.DTOs.Common.Enums.ErrorType.Info)
+            {
+                return new SendEmailVerificationTokenResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
+            }
+
+            var emailResult = await _emailManager.Send(new EmailManager.Params.SendEmailParams()
+            {
+                EmailAddressesFrom = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Name = "BlogPlat-form",
+                        Address = "noreply@BlogPlat-Form.com"
+                    }
+                },
+                EmailAddressesTo = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Name = "NewUser",
+                        Address = sendEmailVerificationTokenParams.Email
+                    }
+                },
+                Subject = "Verfy Email",
+                Body = string.Format("<a href='{0}'>Verify Email</a>", _frontAppOptions.Value.VerifyUserUrl + "?token=" + result.ResponseObject.Token)
+            });
+
+            if(!emailResult.IsValid && !emailResult.CanContinue)
+            {
+                return new SendEmailVerificationTokenResult(emailResult.Error);
+            }
+
+            return new SendEmailVerificationTokenResult();
         }
 
         public async Task<VerifyEmailResult> VerifyEmail(VerifyEmailParams verifyEmailParams)
@@ -106,6 +154,15 @@ namespace BlogPlatform.Application.Managers.AuthManager
             {
                 return new VerifyEmailResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }
+
+            var blogUser = _userRepository.GetByEmail(result.ResponseObject.Email);
+            if(blogUser == null)
+            {
+                new VerifyEmailResult(new Error("User Verify failed on blog side. User not founded.", ErrorType.Exception));
+            }
+
+            blogUser.IsVerified = true;
+            _userRepository.AddOrUpdate(blogUser);
 
             return new VerifyEmailResult();
         }
@@ -128,7 +185,27 @@ namespace BlogPlatform.Application.Managers.AuthManager
                 return new SendResetPasswordLinkResult(new Error(result.Error.ErrorMessages, (ErrorType)result.Error.ErrorType));
             }
 
-            //Send EMAIL WITH RESET PASSWORD LINK (url?token={resetPasswordToken})
+            var emailResult = await _emailManager.Send(new EmailManager.Params.SendEmailParams()
+            {
+                EmailAddressesFrom = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Name = "BlogPlat-form",
+                        Address = "noreply@BlogPlat-Form.com"
+                    }
+                },
+                EmailAddressesTo = new List<EmailAddress>()
+                {
+                    new EmailAddress()
+                    {
+                        Name = "ResetPassword",
+                        Address = sendResetPasswordLinkParams.Email
+                    }
+                },
+                Subject = "Reset Password",
+                Body = string.Format("<a href='{0}'>Reset Password</a>", _frontAppOptions.Value.ResetPasswordUrl + "?token=" + result.ResponseObject.Token)
+            });
 
             return new SendResetPasswordLinkResult();
         }
@@ -145,7 +222,8 @@ namespace BlogPlatform.Application.Managers.AuthManager
             {
                 Token = resetPasswordParams.Token,
                 Password = resetPasswordParams.Password,
-                ConfirmPassword = resetPasswordParams.ConfirmPassword
+                ConfirmPassword = resetPasswordParams.ConfirmPassword,
+                Email = resetPasswordParams.Email 
             });
 
             if (!result.IsSuccess && result.Error.ErrorType != External.DTOs.Common.Enums.ErrorType.Info)

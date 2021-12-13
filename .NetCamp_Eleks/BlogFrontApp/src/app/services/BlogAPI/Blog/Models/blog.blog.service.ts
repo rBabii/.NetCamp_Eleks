@@ -4,7 +4,6 @@ import {Error} from '../../../Common/Models/Error';
 import {SetupBlogRequest} from './Request/SetupBlogRequest';
 import {SetupBlogResponse} from './Response/SetupBlogResponse';
 import {GetBlogListResponse} from './Response/GetBlogListResponse';
-import {GetSingleBlogPagePostItem} from './Response/Childs/GetSingleBlogPagePostItem';
 import {GetSingleBlogPageResponse} from './Response/GetSingleBlogPageResponse';
 
 @Injectable({

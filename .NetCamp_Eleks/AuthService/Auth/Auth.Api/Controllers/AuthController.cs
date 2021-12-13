@@ -264,7 +264,10 @@ namespace Auth.Api.Controllers
                         ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
                     });
                 }
-                return Ok("User verified successfully");
+                return Ok(new VerifyUserEmailResponse() 
+                {
+                    Email = result.Email
+                });
             }
             catch (UserUpdateException ex)
             {
@@ -312,6 +315,29 @@ namespace Auth.Api.Controllers
             }
         }
 
+
+        [Route("/api/[controller]/GetEmailVerificationToken")]
+        [HttpPost]
+        public IActionResult GetEmailVerificationToken(GetEmailVerificationTokenRequest getResetPasswordTokenRequest)
+        {
+            var result = _userManager.GetEmailVerificationToken(new GetEmailVerificationTokenParams()
+            {
+                UserEmail = getResetPasswordTokenRequest.Email
+            });
+            if (!result.IsValid && !result.CanContinue)
+            {
+                return BadRequest(new External.DTOs.Common.Models.Error()
+                {
+                    ErrorMessages = result.Error.ErrorMessages,
+                    ErrorType = (External.DTOs.Common.Enums.ErrorType)result.Error.ErrorType
+                });
+            }
+            return Ok(new GetEmailVerificationTokenResponse()
+            {
+                Token = result.EmailVerificationToken
+            });
+        }
+
         [Route("/api/[controller]/GetResetPasswordToken")]
         [HttpPost]
         public IActionResult GetResetPasswordToken(GetResetPasswordTokenRequest getResetPasswordTokenRequest)
@@ -344,7 +370,8 @@ namespace Auth.Api.Controllers
                 {
                     Token = resetPasswordRequest.Token,
                     Password = resetPasswordRequest.Password,
-                    ConfirmPassword = resetPasswordRequest.ConfirmPassword
+                    ConfirmPassword = resetPasswordRequest.ConfirmPassword,
+                    Email = resetPasswordRequest.Email
                 });
                 if (!result.IsValid && !result.CanContinue)
                 {
@@ -364,7 +391,6 @@ namespace Auth.Api.Controllers
             {
                 return StatusCode(500);
             }
-            
         }
     }
 }

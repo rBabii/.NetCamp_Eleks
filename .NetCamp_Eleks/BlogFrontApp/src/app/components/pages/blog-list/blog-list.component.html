@@ -1,6 +1,6 @@
 <div *mobxAutorun>
   <div class="d-flex flex-wrap justify-content-center">
-    <div style="margin: 10px;" *ngFor="let blog of blogListStore.Blogs">
+    <div style="margin: 10px; width: 100%;" *ngFor="let blog of blogListStore.Blogs">
       <app-blog-list-item [blogItem]="blog"></app-blog-list-item>
     </div>
   </div>

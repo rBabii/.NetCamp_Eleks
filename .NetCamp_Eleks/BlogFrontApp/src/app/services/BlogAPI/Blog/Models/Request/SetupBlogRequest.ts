@@ -3,4 +3,6 @@ export interface SetupBlogRequest {
   subTitle: string;
   visible: boolean;
   blogUrl: string;
+  previewText: string;
+  blogImage: string;
 }

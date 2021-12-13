@@ -63,7 +63,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
             return errorResult;
         }
 
-        public async Task<HttpResult<object>> VerifyUserEmail(VerifyUserEmailRequest verifyUserEmailRequest)
+        public async Task<HttpResult<VerifyUserEmailResponse>> VerifyUserEmail(VerifyUserEmailRequest verifyUserEmailRequest)
         {
             var body = new StringContent(
                 JsonSerializer.Serialize(verifyUserEmailRequest),
@@ -77,8 +77,13 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
             {
                 using var successResponseStream = await response.Content.ReadAsStreamAsync();
 
-                var successResult = new HttpResult<object>(response.StatusCode)
-                { };
+                var successObject = await JsonSerializer.DeserializeAsync
+                    <VerifyUserEmailResponse>(successResponseStream, JsonSerializerOptions);
+
+                var successResult = new HttpResult<VerifyUserEmailResponse>(response.StatusCode)
+                {
+                    ResponseObject = successObject,
+                };
 
                 return successResult;
             }
@@ -87,7 +92,7 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
             var errorObject = await JsonSerializer.DeserializeAsync
                 <Error>(errorResponseStream, JsonSerializerOptions);
 
-            var errorResult = new HttpResult<object>(response.StatusCode)
+            var errorResult = new HttpResult<VerifyUserEmailResponse>(response.StatusCode)
             {
                 Error = errorObject
             };
@@ -125,6 +130,45 @@ namespace BlogPlatform.Infrastructure.HttpServices.Auth
                 <Error>(errorResponseStream, JsonSerializerOptions);
 
             var errorResult = new HttpResult<GetResetPasswordTokenResponse>(response.StatusCode)
+            {
+                Error = errorObject
+            };
+
+            return errorResult;
+
+        }
+
+
+        public async Task<HttpResult<GetEmailVerificationTokenResponse>> GetEmailVerificationToken(GetEmailVerificationTokenRequest getEmailVerificationTokenRequest)
+        {
+            var body = new StringContent(
+                JsonSerializer.Serialize(getEmailVerificationTokenRequest),
+                Encoding.UTF8,
+                "application/json"
+                );
+
+            var response = await _httpClient.PostAsync("api/auth/GetEmailVerificationToken", body);
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var successResponseStream = await response.Content.ReadAsStreamAsync();
+
+                var successObject = await JsonSerializer.DeserializeAsync
+                    <GetEmailVerificationTokenResponse>(successResponseStream, JsonSerializerOptions);
+
+                var successResult = new HttpResult<GetEmailVerificationTokenResponse>(response.StatusCode)
+                {
+                    ResponseObject = successObject,
+                };
+
+                return successResult;
+            }
+
+            using var errorResponseStream = await response.Content.ReadAsStreamAsync();
+            var errorObject = await JsonSerializer.DeserializeAsync
+                <Error>(errorResponseStream, JsonSerializerOptions);
+
+            var errorResult = new HttpResult<GetEmailVerificationTokenResponse>(response.StatusCode)
             {
                 Error = errorObject
             };

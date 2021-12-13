@@ -23,5 +23,9 @@ namespace BlogPlatform.Application.Managers.AuthManager.Params
 
         [Required(ErrorMessage = "Token is Required.")]
         public string Token { get; set; }
+
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid Email Address.")]
+        public string Email { get; set; }
     }
 }

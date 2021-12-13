@@ -43,6 +43,30 @@
         </mat-form-field>
 
         <mat-form-field class="margtop3rem w-100" appearance="fill">
+          <mat-label>Preview Text</mat-label>
+          <textarea style="min-height: 200px;" [formControl]="PreviewText" matInput placeholder="Preview Text">
+          </textarea>
+          <mat-error *ngIf="PreviewText.invalid">
+            <div *ngIf="PreviewText.errors.required">
+              Preview Text Field is required.
+            </div>
+
+            <div *ngIf="PreviewText.errors.maxlength">
+              Maximum 150 characters.
+            </div>
+
+            <div *ngIf="PreviewText.errors.minlength">
+              Minimum 100 characters.
+            </div>
+          </mat-error>
+        </mat-form-field>
+
+        <app-file-uplaod (onUploadFinished)="OnFileUploaded($event)"></app-file-uplaod>
+        <div class="w-100 blog-image" style="background-image: url('http://localhost:5003/files/{{ImageName}}')">
+
+        </div>
+
+        <mat-form-field class="margtop3rem w-100" appearance="fill">
           <mat-label>Visibility</mat-label>
           <mat-select [formControl]="Visible" required>
             <mat-option [value]="true">
